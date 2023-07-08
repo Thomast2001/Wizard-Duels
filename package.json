@@ -1,0 +1,14 @@
+{
+  "name": "multiplayergame",
+  "version": "1.0.0",
+  "description": "Multiplayer game in canvas",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.7.1"
+  }
+}
