@@ -4,6 +4,7 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 let socket = io();
 
+
 let mouse = {
     "x": undefined,
     "y": undefined
@@ -66,27 +67,29 @@ ctx.fill();
 // }
 
 function handlePlayers(players){
-    players.forEach(player => {
-        player.draw();
-    });
+    for (let id in players) {
+        players[id].draw();
+    }
 }
 
-let players = [new Player("red")];
+let players = {};
+
+
 handlePlayers(players);
 
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "w":
-            players[0].y -= 5
+            players[socket.id].y -= 5
             break;
         case "a":
-            players[0].x -= 5
+            players[socket.id].x -= 5
             break;
         case "s":
-            players[0].y += 5
+            players[socket.id].y += 5
             break;
         case "d":
-            players[0].x += 5
+            players[socket.id].x += 5
             break;
         default:
             console.log("somekey");
@@ -95,16 +98,34 @@ canvas.addEventListener("keydown", (event) => {
 });
 
 canvas.addEventListener("click", (event) => {
-    players[0].calcSpeed(event.x, event.y);
-    console.log(players);
+    players[socket.id].calcSpeed(event.x, event.y);
+    console.log(socket.id);
+    socket.emit("moveClick", {'x': event.x, 'y': event.y})
 })
 
 socket.on("newPlayer", (newPlayer) => {
     players[newPlayer.id] = new Player(newPlayer.color)
 })
 
+socket.on("playerDisconnect", (playerId) => {
+    delete players[playerId];
+})
+
+socket.on("updatePlayers", (updatedPlayers) => {
+    for (let playerId in players) {
+        if (playerId == socket.id){
+            console.log("Calculate corret pos")
+        } else{
+            players[playerId].x = updatedPlayers[playerId].x;
+            players[playerId].y = updatedPlayers[playerId].y;
+        }
+    }
+})
+
 setInterval(() => {
-    players[0].move();
+    // console.log(players[socket.id])
+    players[socket.id].move();
+    console.log(players)
 }, 15);
 
 function animate(){

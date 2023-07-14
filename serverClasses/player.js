@@ -41,3 +41,5 @@ class Player{
         ctx.fill();
     }
 }
+
+module.exports = Player
