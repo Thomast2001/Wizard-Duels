@@ -32,15 +32,14 @@ let updateInterval = setInterval(() => {
 }, 15);
 
 io.on('connection', (socket) => {
-    // console.log(players)
     console.log("user con")
     players[socket.id] = new Player("red");
 
     for (let id in players) {
-        socket.emit("newPlayer", {id: id, "color": players[id].color});  // send the new player to all other clients
+        socket.emit("newPlayer", {'id': id, 'color': players[id].color});  // Send all the existing players to the new player
     }
 
-    socket.broadcast.emit("newPlayer", {id: socket.id, "color": players[socket.id].color});  // send the new player to all other clients
+    socket.broadcast.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color});  // send the new player to all other clients
 
     socket.on('moveClick', (click) => {
         players[socket.id].calcSpeed(click.x, click.y);

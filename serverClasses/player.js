@@ -33,13 +33,6 @@ class Player{
         this.x += this.speedX;
         this.y += this.speedY;
     }
-
-    draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
-        ctx.fill();
-    }
 }
 
 module.exports = Player

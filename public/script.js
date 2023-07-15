@@ -66,24 +66,48 @@ ctx.fill();
 //     }
 // }
 
-function handlePlayers(players){
+function drawLoops(players){
+    fireballs.forEach((fireball) => {
+        fireball.draw();
+    })
+
     for (let id in players) {
         players[id].draw();
     }
+
 }
 
 let players = {};
+let fireballs = [];
+let particles = []
 
 
-handlePlayers(players);
+function handleFireballs(){
+    fireballs.forEach((fireball) => {
+        fireball.move();
+        particles.push(new Particle(fireball.x, fireball.y, `hsl(${Math.floor(Math.random()*30)}, 100%, 50%)`)); // `hsl(${Math.random()*30+90}, 100,100)`
+    })
+}
+
+function handleParticles(){
+    particles.forEach((particle, index) => {
+        particle.move();
+        if (particle.radius < 1){
+            particles.splice(index,1);
+        }
+        particle.draw();        
+    });
+}
+
+
 
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
-        case "w":
-            players[socket.id].y -= 5
+        case "q":
+            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y));
             break;
         case "a":
-            players[socket.id].x -= 5
+            players[socket.id].x -= 50
             break;
         case "s":
             players[socket.id].y += 5
@@ -96,6 +120,11 @@ canvas.addEventListener("keydown", (event) => {
             break;
     }
 });
+
+canvas.addEventListener("mousemove", (event) => {
+    mouse.x = event.x;
+    mouse.y = event.y;
+})
 
 canvas.addEventListener("click", (event) => {
     players[socket.id].calcSpeed(event.x, event.y);
@@ -114,7 +143,10 @@ socket.on("playerDisconnect", (playerId) => {
 socket.on("updatePlayers", (updatedPlayers) => {
     for (let playerId in players) {
         if (playerId == socket.id){
-            console.log("Calculate corret pos")
+            players[playerId].x = updatedPlayers[playerId].x;
+            players[playerId].y = updatedPlayers[playerId].y;
+            
+            // console.log("calculate actual posistion"); // ja gør det tak
         } else{
             players[playerId].x = updatedPlayers[playerId].x;
             players[playerId].y = updatedPlayers[playerId].y;
@@ -125,13 +157,14 @@ socket.on("updatePlayers", (updatedPlayers) => {
 setInterval(() => {
     // console.log(players[socket.id])
     players[socket.id].move();
-    console.log(players)
+    handleFireballs();
 }, 15);
 
 function animate(){
-    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    handlePlayers(players);
+    handleParticles();
+    drawLoops(players);
     requestAnimationFrame(animate);
 }
-animate()
+animate();
