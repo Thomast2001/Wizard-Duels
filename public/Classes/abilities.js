@@ -17,6 +17,17 @@ class Fireball{
         ctx.arc(this.x, this.y, 8, 0, 2 * Math.PI);
         ctx.fill();
     }
+    
+    collisionCheck(index, fireballs, players) {
+        for (let id in players) {
+            if (this.playerID != id &&
+                this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
+                this.y > players[id].y - 20 && this.y < players[id].y + 20) {
+                    this.explode(); 
+                    fireballs.splice(index,1);
+            }
+        }
+    }
 
     explode() {
         for (let i = 0; i < 50; i++) {

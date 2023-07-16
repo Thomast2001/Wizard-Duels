@@ -98,15 +98,7 @@ function handleFireballs(){
         if (fireball.x < 0 || fireball.x > canvas.width || fireball.y < 0 || fireball.y > canvas.height){
             fireballs.splice(index,1);
         }
-        for (let id in players) {
-            console.log(fireball.playerID, id);
-            if (fireball.playerID != id &&    // Check collision with fireball and players
-                fireball.x > players[id].x - 20 && fireball.x < players[id].x + 20 &&
-                fireball.y > players[id].y - 20 && fireball.y < players[id].y + 20) {
-                   fireball.explode(); 
-                   fireballs.splice(index,1);
-            }
-        }
+        fireball.collisionCheck(index, fireballs, players);
         particles.push(new Particle(fireball.x, fireball.y, 2, 2, `hsla(${Math.floor(Math.random()*30)}, 100%, 50%, 70%)`)); // `hsl(${Math.random()*30+90}, 100,100)`
     })
 }
