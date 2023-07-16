@@ -4,7 +4,7 @@ class Player{
         this.x = 200;
         this.health = 100;
         this.color = color
-        this.speedTotal = 1;
+        this.speedTotal = 2;
         this.speedX = 0;
         this.speedY = 0;
         this.targetPosX = undefined;

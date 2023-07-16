@@ -34,7 +34,8 @@ function drawLoops(players){
 
 let players = {};
 let fireballs = [];
-let particles = []
+let particles = [];
+let explosionsWaves = [];
 
 function collisionWithPlayer(obj){
     for (let id in players) {
@@ -68,6 +69,15 @@ function handleParticles(){
     });
 }
 
+function handleExplosionWaves(){
+    explosionsWaves.forEach((explosion, index) => {
+        explosion.draw();        
+        explosion.update();
+        if (explosion.alpha < 1){
+            explosionsWaves.splice(index,1);
+        }
+    });
+}
 
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
@@ -136,6 +146,7 @@ function animate(){
     ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     handleParticles();
+    handleExplosionWaves();
     drawLoops(players);
     requestAnimationFrame(animate);
 }

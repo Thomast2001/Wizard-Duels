@@ -23,7 +23,7 @@ server.listen(port, () => {
 
 io.on('connection', (socket) => {
     console.log("user con")
-    players[socket.id] = new Player("red", `player${Math.floor(Math.random()*10)}`);
+    players[socket.id] = new Player(`hsl(${Math.random()*360},100%, 50%)`, `player${Math.floor(Math.random()*10)}`);
 
     for (let id in players) {
         socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name});  // Send all the existing players to the new player

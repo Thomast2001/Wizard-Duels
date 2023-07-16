@@ -34,6 +34,7 @@ class Fireball{
             particles.push(new Particle(this.x, this.y, 10, 3,
                 `hsla(${Math.floor(Math.random()*30)}, ${Math.floor(Math.random()*100)}%, 50%, 100%)`));
         }
+        explosionsWaves.push(new ExplosionWave(this.x, this.y, 8, '255, 255, 255'));
     }
 }
 
