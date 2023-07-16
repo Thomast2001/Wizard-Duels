@@ -114,7 +114,6 @@ function handleParticles(){
 }
 
 
-
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "q":
@@ -174,7 +173,6 @@ socket.on("fireball", (fb) => {
 });
 
 setInterval(() => {
-    // console.log(players[socket.id])
     players[socket.id].move();
     handleFireballs();
 }, 15);
