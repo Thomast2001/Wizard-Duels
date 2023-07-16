@@ -1,5 +1,5 @@
 class Player{
-    constructor(color){
+    constructor(color, name){
         this.y = 200
         this.x = 200;
         this.health = 100;
@@ -11,6 +11,7 @@ class Player{
         this.targetPosY = undefined;
         this.knockbackX = 0;
         this.knockbackY = 0;
+        this.name = name;
     }
 
     calcSpeed(mouseX, mouseY) {

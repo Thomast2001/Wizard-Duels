@@ -23,13 +23,13 @@ server.listen(port, () => {
 
 io.on('connection', (socket) => {
     console.log("user con")
-    players[socket.id] = new Player("red");
+    players[socket.id] = new Player("red", `player${Math.floor(Math.random()*10)}`);
 
     for (let id in players) {
-        socket.emit("newPlayer", {'id': id, 'color': players[id].color});  // Send all the existing players to the new player
+        socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name});  // Send all the existing players to the new player
     }
 
-    socket.broadcast.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color});  // send the new player to all other clients
+    socket.broadcast.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
 
     socket.on('moveClick', (click) => {
         players[socket.id].calcSpeed(click.x, click.y);

@@ -2,6 +2,7 @@ const canvas = document.getElementById("game_canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
+ctx.font = "12px serif";
 let socket = io();
 
 
@@ -19,52 +20,6 @@ ctx.beginPath();
 ctx.fillStyle = "red";
 ctx.fillRect(50,50,50,50);
 ctx.fill();
-
-// class player{
-//     constructor(color){
-//         this.y = 200
-//         this.x = 200; // b = y - ax
-//         this.health = 100;
-//         this.color = color
-//         this.speedTotal = 1;
-//         this.speedX = 5;
-//         this.speedY = 5;
-//         this.targetPosX = undefined;
-//         this.targetPosY = undefined;
-//         this.knockbackX = 0;
-//         this.knockbackY = 0;
-//     }
-
-//     calcSpeed(mouseX, mouseY) {
-//         this.targetPosX = mouseX;
-//         this.targetPosY = mouseY;
-//         let xDiff = mouseX - this.x;
-//         let yDiff = mouseY - this.y;
-
-//         let hyp = Math.hypot(xDiff, yDiff)
-
-//         this.speedX = xDiff / hyp * this.speedTotal
-//         this.speedY = yDiff / hyp * this.speedTotal
-//     }
-
-//     move() {
-//         if (this.x < this.targetPosX + Math.abs(this.speedX) && this.x > this.targetPosX - Math.abs(this.speedX)) {
-//             this.speedX = 0;
-//             this.speedY = 0;
-//         }
-
-//         this.x += this.speedX;
-//         this.y += this.speedY;
-        
-//     }
-
-//     draw() {
-//         ctx.fillStyle = this.color;
-//         ctx.beginPath();
-//         ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
-//         ctx.fill();
-//     }
-// }
 
 function drawLoops(players){
     fireballs.forEach((fireball) => {
@@ -147,7 +102,7 @@ canvas.addEventListener("click", (event) => {
 })
 
 socket.on("newPlayer", (newPlayer) => {
-    players[newPlayer.id] = new Player(newPlayer.color)
+    players[newPlayer.id] = new Player(newPlayer.color, newPlayer.name)
 })
 
 socket.on("playerDisconnect", (playerId) => {
