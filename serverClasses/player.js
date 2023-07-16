@@ -1,7 +1,7 @@
 class Player{
     constructor(color){
         this.y = 200
-        this.x = 200; // b = y - ax
+        this.x = 200;
         this.health = 100;
         this.color = color
         this.speedTotal = 1;
@@ -30,8 +30,30 @@ class Player{
             this.speedX = 0;
             this.speedY = 0;
         }
-        this.x += this.speedX;
-        this.y += this.speedY;
+        this.x = this.x + this.speedX + this.knockbackX;
+        this.y = this.y + this.speedY + this.knockbackY;
+        this.reduceKnockback();
+    }
+
+    knockback(x, y){
+        this.knockbackX += x;
+        this.knockbackY += y;
+        this.speedX = 0;
+        this.speedY = 0;
+    }
+
+    reduceKnockback() {
+        if (this.knockbackX > 0.2 || this.knockbackX < -0.2 || this.knockbackY > 0.2 || this.knockbackY < -0.2) {
+            console.log(this.knockbackX, this.knockbackY);
+            this.knockbackX *= 0.95;
+            this.knockbackY *= 0.95;
+            if (this.knockbackX <= 0.2 && this.knockbackX >= -0.2) {
+                this.knockbackX = 0;
+            }
+            if (this.knockbackY <= 0.2 && this.knockbackY >= -0.2) {
+                this.knockbackY = 0;
+            }
+        } 
     }
 }
 

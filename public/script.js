@@ -81,11 +81,33 @@ let players = {};
 let fireballs = [];
 let particles = []
 
+function collisionWithPlayer(obj){
+    for (let id in players) {
+        if (fireball.playerID != id &&
+            fireball.x > players[id].x - 20 && fireball.x < players[id].x + 20 &&
+            fireball.y > players[id].y - 20 && fireball.y < players[id].y + 20) {
+                fireball.explode(); 
+                fireballs.splice(index,1);
+        }
+    }
+}
 
 function handleFireballs(){
-    fireballs.forEach((fireball) => {
+    fireballs.forEach((fireball, index) => {
         fireball.move();
-        particles.push(new Particle(fireball.x, fireball.y, `hsl(${Math.floor(Math.random()*30)}, 100%, 50%)`)); // `hsl(${Math.random()*30+90}, 100,100)`
+        if (fireball.x < 0 || fireball.x > canvas.width || fireball.y < 0 || fireball.y > canvas.height){
+            fireballs.splice(index,1);
+        }
+        for (let id in players) {
+            console.log(fireball.playerID, id);
+            if (fireball.playerID != id &&    // Check collision with fireball and players
+                fireball.x > players[id].x - 20 && fireball.x < players[id].x + 20 &&
+                fireball.y > players[id].y - 20 && fireball.y < players[id].y + 20) {
+                   fireball.explode(); 
+                   fireballs.splice(index,1);
+            }
+        }
+        particles.push(new Particle(fireball.x, fireball.y, 2, 2, `hsla(${Math.floor(Math.random()*30)}, 100%, 50%, 70%)`)); // `hsl(${Math.random()*30+90}, 100,100)`
     })
 }
 
@@ -104,7 +126,8 @@ function handleParticles(){
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "q":
-            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y));
+            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
+            socket.emit('fireball', mouse);
             break;
         case "a":
             players[socket.id].x -= 50
@@ -153,6 +176,10 @@ socket.on("updatePlayers", (updatedPlayers) => {
         }
     }
 })
+
+socket.on("fireball", (fb) => {
+    fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID));
+});
 
 setInterval(() => {
     // console.log(players[socket.id])

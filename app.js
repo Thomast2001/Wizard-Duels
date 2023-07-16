@@ -1,4 +1,5 @@
 const Player = require('./serverClasses/player');
+const A = require('./serverClasses/abilities');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -19,17 +20,6 @@ server.listen(port, () => {
     console.log('Server running at http://localhost:' + port);
 });
 
-let players = {};
-let updatedPlayers = {} // Used for sending player positions to players
-
-let updateInterval = setInterval(() => {
-    updatedPlayers = {};
-    for (let id in players) {
-        players[id].move();
-        updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y};
-    }
-    io.emit("updatePlayers", updatedPlayers);
-}, 15);
 
 io.on('connection', (socket) => {
     console.log("user con")
@@ -45,9 +35,36 @@ io.on('connection', (socket) => {
         players[socket.id].calcSpeed(click.x, click.y);
     })
 
+    socket.on('fireball', targetPos => {
+        fireballs.push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
+        socket.broadcast.emit('fireball', {'x': players[socket.id].x, y: players[socket.id].y,
+                        'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
+    })
+
     socket.on('disconnect', () => {
         socket.broadcast.emit("playerDisconnect", socket.id)
         delete players[socket.id];
     });
   });
 
+
+        ////////////////////////////////////////
+        // Handle the game on the server side //
+        ////////////////////////////////////////
+
+let players = {};
+let updatedPlayers = {} // Used for sending player positions to players
+let fireballs = [];
+
+let updateInterval = setInterval(() => {
+    updatedPlayers = {};
+    for (let id in players) {
+        players[id].move();
+        updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y};
+    }
+    fireballs.forEach((fireball, index) => {
+        fireball.move();
+        fireball.collisionCheck(index, fireballs, players);  
+    })
+    io.emit("updatePlayers", updatedPlayers);
+}, 15);
