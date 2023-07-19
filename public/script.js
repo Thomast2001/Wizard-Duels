@@ -103,7 +103,7 @@ canvas.addEventListener("keydown", (event) => {
             players[socket.id].calcSpeed(mouse.x, mouse.y);
             break;
         case "s":
-            console.log(players[socket.id]);
+            socket.emit("airwave");
             break;
         case "d":
             players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
@@ -158,6 +158,10 @@ socket.on('teleport', (tp) => {
     console.log(tp.playerID);
     teleport(players[tp.playerID], tp.pos);
 });
+
+socket.on('airwave', (id) => {
+    explosionsWaves.push(new ExplosionWave(players[id].x, players[id].y, 19, "255,255,255"));   
+})
 
 setInterval(() => {
     players[socket.id].move();
