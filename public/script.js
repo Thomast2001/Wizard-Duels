@@ -35,6 +35,7 @@ function drawLoops(players){
 let players = {};
 let fireballs = [];
 let particles = [];
+let healthNumbers = [];
 let explosionsWaves = [];
 
 function collisionWithPlayer(obj){
@@ -69,6 +70,16 @@ function handleParticles(){
     });
 }
 
+function handleHealthNumbers(){
+    healthNumbers.forEach((number, index) => {
+        number.draw(players);    
+        number.move();
+        if (number.speedY > 5){
+            healthNumbers.splice(index,1);
+        }
+    });
+}
+
 function handleExplosionWaves(){
     explosionsWaves.forEach((explosion, index) => {
         explosion.draw();        
@@ -82,20 +93,23 @@ function handleExplosionWaves(){
 canvas.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "q":
-            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
             socket.emit('fireball', mouse);
+            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
             break;
-        case "a":
-            players[socket.id].x -= 50
+        case "e":
+            socket.emit('teleport', mouse);
+            teleport(players[socket.id], mouse);
+            // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
+            players[socket.id].calcSpeed(mouse.x, mouse.y);
             break;
         case "s":
-            players[socket.id].y += 5
+            console.log(players[socket.id]);
             break;
         case "d":
-            players[socket.id].x += 5
+            players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
+            // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
             break;
         default:
-            console.log("somekey");
             break;
     }
 });
@@ -120,21 +134,29 @@ socket.on("playerDisconnect", (playerId) => {
 })
 
 socket.on("updatePlayers", (updatedPlayers) => {
-    for (let playerId in players) {
-        if (playerId == socket.id){
-            players[playerId].x = updatedPlayers[playerId].x;
-            players[playerId].y = updatedPlayers[playerId].y;
+    for (let playerID in players) {
+        players[playerID].updateHealth(updatedPlayers[playerID].health, playerID);
+
+        if (playerID == socket.id){
+            players[playerID].x = updatedPlayers[playerID].x;
+            players[playerID].y = updatedPlayers[playerID].y;
             
             // console.log("calculate actual posistion"); // ja gør det tak
         } else{
-            players[playerId].x = updatedPlayers[playerId].x;
-            players[playerId].y = updatedPlayers[playerId].y;
+            players[playerID].x = updatedPlayers[playerID].x;
+            players[playerID].y = updatedPlayers[playerID].y;
         }
     }
 })
 
 socket.on("fireball", (fb) => {
     fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID));
+});
+
+socket.on('teleport', (tp) => {
+    console.log(tp);
+    console.log(tp.playerID);
+    teleport(players[tp.playerID], tp.pos);
 });
 
 setInterval(() => {
@@ -145,9 +167,10 @@ setInterval(() => {
 function animate(){
     ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawLoops(players);
     handleParticles();
     handleExplosionWaves();
-    drawLoops(players);
+    handleHealthNumbers();
     requestAnimationFrame(animate);
 }
 animate();

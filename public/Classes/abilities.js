@@ -48,3 +48,42 @@ function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
     let speedY = yDiff / hyp * totalSpeed
     return {'x': speedX, 'y': speedY};
 }
+
+// class teleport{
+//     constructor(pos){
+//         this.pos = pos
+//         this.cooldown = 10;
+//     }
+
+//     cast(player){
+//         for (let i = 0; i < 5; i++) {
+//             for (let j = 0; j < 5; j++) {
+//                 particles.push(new Particle(player.x - 5 + 2*i, player.y - 5 + 2*j, 1, 2, "rgba(0,255,255,150)"));
+//                 particles.push(new Particle(this.pos.x - 5 + 2*i, this.pos.y - 5 + 2*j, 1, 2, "rgba(0,255,255,150)"));
+//             }
+//         }
+//         player.x = this.pos.x
+//         player.y = this.pos.y
+//     }
+// }
+
+function teleport(player, pos){
+    console.log(pos);
+    let teleportPos = {'x': pos.x, 'y': pos.y}
+    let maxTeleportDist = 200;
+    let xDiff = teleportPos.x - player.x;
+    let yDiff = teleportPos.y - player.y;
+    let distance = Math.hypot(xDiff, yDiff);
+    if (distance > maxTeleportDist) {
+        teleportPos.x = player.x + xDiff * (maxTeleportDist/distance);
+        teleportPos.y = player.y + yDiff * (maxTeleportDist/distance);
+    }
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+            particles.push(new Particle(player.x - 16 + 8*i, player.y - 16 + 8*j, 1, 3, "rgba(0,255,255,150)"));
+            particles.push(new Particle(teleportPos.x - 20 + 10*i, teleportPos.y - 20 + 10*j, 1, 3, "rgba(0,255,255,150)"));
+        }
+    }
+    player.x = teleportPos.x
+    player.y = teleportPos.y
+}

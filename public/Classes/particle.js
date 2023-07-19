@@ -48,3 +48,34 @@ class ExplosionWave{
     ctx.lineWidth = 1;
   }
 }
+
+
+class healthChangeNumber {
+  constructor(x, y, number, playerID) {
+    this.x = -ctx.measureText("-1").width/2;
+    this.y = 30;
+    if (Math.random() > 0.5) {this.speedX = 1.5}
+    else {this.speedX = -1.5}
+    this.speedY = -3.5;
+    this.number = number;
+    this.color = "red";
+    this.playerID = playerID
+  };
+
+  move() {
+    this.speedY += 0.2;
+    this.x += this.speedX;
+    this.y += this.speedY;
+  }
+
+  draw(players) {
+    ctx.fillStyle = this.color;
+    ctx.font = "20px serif";
+    ctx.beginPath();
+    console.log(players[this.playerID].x)
+    ctx.fillText(this.number, players[this.playerID].x + this.x, players[this.playerID].y + this.y - 35)
+    ctx.strokeStyle  = "grey";
+    ctx.fill();
+    ctx.font = "12px serif";
+  }
+}

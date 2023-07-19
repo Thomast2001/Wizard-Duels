@@ -36,9 +36,16 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fireball', targetPos => {
+        players[socket.id].health--;
         fireballs.push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
-        socket.broadcast.emit('fireball', {'x': players[socket.id].x, y: players[socket.id].y,
+        socket.broadcast.emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                         'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
+    })
+
+    socket.on('teleport', pos => {
+        A.teleport(players[socket.id], pos);
+        players[socket.id].calcSpeed(pos.x, pos.y);
+        socket.broadcast.emit('teleport', {'playerID': socket.id, 'pos': pos})
     })
 
     socket.on('disconnect', () => {
@@ -53,14 +60,14 @@ io.on('connection', (socket) => {
         ////////////////////////////////////////
 
 let players = {};
-let updatedPlayers = {} // Used for sending player positions to players
+let updatedPlayers = {} // Used for sending player positions and health to connected clients
 let fireballs = [];
 
 let updateInterval = setInterval(() => {
     updatedPlayers = {};
     for (let id in players) {
         players[id].move();
-        updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y};
+        updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
     }
     fireballs.forEach((fireball, index) => {
         fireball.move();
