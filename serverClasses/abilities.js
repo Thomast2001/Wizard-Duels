@@ -53,4 +53,26 @@ function teleport(player, pos){
     player.y = teleportPos.y;
 }
 
-module.exports = {Fireball, calcSpeed, teleport}
+function airwave(players, casterID, fireballs){
+    let multiplier = 6;
+    for (let playerID in players) {
+        if (playerID != casterID) {
+            let xDiff = players[playerID].x - players[casterID].x;
+            let yDiff = players[playerID].y - players[casterID].y;
+            distance = Math.round(Math.hypot(xDiff, yDiff));
+            if (distance != 0 && distance < 200) {
+                distanceNerf = distance < 50 ? 50 : distance;
+                players[playerID].knockbackX = (200 / distanceNerf) * (xDiff / distance) * multiplier;
+                players[playerID].knockbackY = (200 / distanceNerf) * (yDiff / distance) * multiplier;
+            }
+        }
+    }
+    // fireballs.forEach( (fireball, index) => {
+    //     let xDiff = players[playerID].x - players[casterID].x;
+    //     let yDiff = players[playerID].y - players[casterID].y;
+    //     distance = Math.round(Math.hypot(xDiff, yDiff));
+    //     if (distance != 0 && distance < 200) {
+    // });
+}
+
+module.exports = {Fireball, calcSpeed, teleport, airwave}

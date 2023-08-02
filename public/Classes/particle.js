@@ -29,7 +29,6 @@ class ExplosionWave{
     this.expandSpeed = expandSpeed;
     this.radius = 5;
     this.rgb = rgb;
-    console.log(rgb)
     this.alpha = 100;
   };
 
@@ -42,7 +41,6 @@ class ExplosionWave{
     ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.strokeStyle = `rgba(${this.rgb}, ${this.alpha}%)`;
-    console.log(`rgba(${this.rgb}, ${this.alpha}%)`);
     ctx.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
     ctx.stroke();
     ctx.lineWidth = 1;
@@ -72,7 +70,6 @@ class healthChangeNumber {
     ctx.fillStyle = this.color;
     ctx.font = "20px serif";
     ctx.beginPath();
-    console.log(players[this.playerID].x)
     ctx.fillText(this.number, players[this.playerID].x + this.x, players[this.playerID].y + this.y - 35)
     ctx.strokeStyle  = "grey";
     ctx.fill();

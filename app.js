@@ -36,10 +36,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fireball', targetPos => {
-        players[socket.id].health--;
-        for (let id in players){
-            A.teleport(players[id], {x: 400, y:400});
-        }
+        // players[socket.id].health--;
+        // for (let id in players){
+        //     A.teleport(players[id], {x: 400, y:400});
+        // }
         fireballs.push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
         socket.broadcast.emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                         'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
@@ -53,19 +53,7 @@ io.on('connection', (socket) => {
 
     socket.on('airwave', () => {
         io.emit('airwave', socket.id);
-        let multiplier = 4;
-        for (let playerID in players) {
-            if (playerID != socket.id) {
-                let xDiff = players[playerID].x - players[socket.id].x;
-                let yDiff = players[playerID].y - players[socket.id].y;
-                distance = Math.round(Math.hypot(xDiff, yDiff));
-                if (distance != 0 && distance < 200) {
-                    distanceNerf = distance < 40 ? 40 : distance;
-                    players[playerID].knockbackX = (200 / distanceNerf) * (xDiff / distance) * multiplier;
-                    players[playerID].knockbackY = (200 / distanceNerf) * (yDiff / distance) * multiplier;
-                }
-            }
-        }
+        A.airwave(players, socket.id, fireballs);
     })
 
     socket.on('disconnect', () => {

@@ -121,7 +121,6 @@ canvas.addEventListener("mousemove", (event) => {
 
 canvas.addEventListener("click", (event) => {
     players[socket.id].calcSpeed(event.x, event.y);
-    console.log(socket.id);
     socket.emit("moveClick", {'x': event.x, 'y': event.y})
 })
 
@@ -154,8 +153,6 @@ socket.on("fireball", (fb) => {
 });
 
 socket.on('teleport', (tp) => {
-    console.log(tp);
-    console.log(tp.playerID);
     teleport(players[tp.playerID], tp.pos);
 });
 
