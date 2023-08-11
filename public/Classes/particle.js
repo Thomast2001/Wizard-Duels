@@ -52,8 +52,8 @@ class healthChangeNumber {
   constructor(x, y, number, playerID) {
     this.x = -ctx.measureText("-1").width/2;
     this.y = 30;
-    if (Math.random() > 0.5) {this.speedX = 1.5}
-    else {this.speedX = -1.5}
+    if (Math.random() > 0.5) {this.speedX = 1}
+    else {this.speedX = -1}
     this.speedY = -3.5;
     this.number = number;
     this.color = "red";
@@ -61,7 +61,7 @@ class healthChangeNumber {
   };
 
   move() {
-    this.speedY += 0.2;
+    this.speedY += 0.1;
     this.x += this.speedX;
     this.y += this.speedY;
   }

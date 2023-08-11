@@ -40,6 +40,8 @@ io.on('connection', (socket) => {
         // for (let id in players){
         //     A.teleport(players[id], {x: 400, y:400});
         // }
+        //players[socket.id].speedX = 0;
+        //players[socket.id].speedY = 0;
         fireballs.push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
         socket.broadcast.emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                         'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})

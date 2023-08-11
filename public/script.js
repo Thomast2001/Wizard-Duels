@@ -1,10 +1,10 @@
 const canvas = document.getElementById("game_canvas");
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 ctx.font = "12px serif";
 let socket = io();
-
+console.log(window.location.href);
 
 let mouse = {
     "x": undefined,
@@ -28,9 +28,11 @@ function drawLoops(players){
 
     for (let id in players) {
         players[id].draw();
+        players[id].handleAnimation();
     }
 
 }
+
 
 let players = {};
 let fireballs = [];
@@ -95,12 +97,17 @@ canvas.addEventListener("keydown", (event) => {
         case "q":
             socket.emit('fireball', mouse);
             fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
+            players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+            players[socket.id].changeAnimationState("attack");
+            //players[socket.id].speedX = 0;
+            //players[socket.id].speedY = 0;
             break;
         case "e":
             socket.emit('teleport', mouse);
             teleport(players[socket.id], mouse);
             // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
             players[socket.id].calcSpeed(mouse.x, mouse.y);
+            players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
             break;
         case "s":
             socket.emit("airwave");
@@ -166,7 +173,7 @@ setInterval(() => {
 }, 15);
 
 function animate(){
-    ctx.fillStyle = "rgba(0,0,0,1)";
+    ctx.fillStyle = "rgba(0,22,22,1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawLoops(players);
     handleParticles();
