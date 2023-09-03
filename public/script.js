@@ -5,6 +5,9 @@ canvas.height = window.innerHeight;
 ctx.font = "12px serif";
 let socket = io();
 console.log(window.location.href);
+background = new Image();
+background.src = window.location.href + "Arena.png";
+
 
 let mouse = {
     "x": undefined,
@@ -28,7 +31,6 @@ function drawLoops(players){
 
     for (let id in players) {
         players[id].draw();
-        players[id].handleAnimation();
     }
 
 }
@@ -93,31 +95,33 @@ function handleExplosionWaves(){
 }
 
 canvas.addEventListener("keydown", (event) => {
-    switch (event.key) {
-        case "q":
-            socket.emit('fireball', mouse);
-            fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
-            players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-            players[socket.id].changeAnimationState("attack");
-            //players[socket.id].speedX = 0;
-            //players[socket.id].speedY = 0;
-            break;
-        case "e":
-            socket.emit('teleport', mouse);
-            teleport(players[socket.id], mouse);
-            // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
-            players[socket.id].calcSpeed(mouse.x, mouse.y);
-            players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-            break;
-        case "s":
-            socket.emit("airwave");
-            break;
-        case "d":
-            players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
-            // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
-            break;
-        default:
-            break;
+    if (players[socket.id].health > 0) {
+        switch (event.key) {
+            case "q":
+                socket.emit('fireball', mouse);
+                fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
+                players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+                players[socket.id].changeAnimationState("attack");
+                //players[socket.id].speedX = 0;
+                //players[socket.id].speedY = 0;
+                break;
+            case "e":
+                socket.emit('teleport', mouse);
+                teleport(players[socket.id], mouse);
+                // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
+                players[socket.id].calcSpeed(mouse.x, mouse.y);
+                players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+                break;
+            case "s":
+                socket.emit("airwave");
+                break;
+            case "d":
+                players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
+                // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
+                break;
+            default:
+                break;
+        }
     }
 });
 
@@ -155,12 +159,19 @@ socket.on("updatePlayers", (updatedPlayers) => {
     }
 })
 
+socket.on("move", (playerMove) => {
+    players[playerMove.id].calcSpeed(playerMove.x, playerMove.y);
+})
+
 socket.on("fireball", (fb) => {
     fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID));
+    players[fb.playerID].changeOrientation(fb.targetPosX - players[fb.playerID].x);
+    players[fb.playerID].changeAnimationState("attack");
 });
 
 socket.on('teleport', (tp) => {
     teleport(players[tp.playerID], tp.pos);
+    players[tp.playerID].calcSpeed(tp.pos.x, tp.pos.y);
 });
 
 socket.on('airwave', (id) => {
@@ -168,13 +179,22 @@ socket.on('airwave', (id) => {
 })
 
 setInterval(() => {
-    players[socket.id].move();
+    for (let id in players) {
+        players[id].move();
+    }
     handleFireballs();
 }, 15);
 
+setInterval(() => {
+    for (let id in players) {
+        players[id].handleAnimation();
+    }
+}, 110);
+
 function animate(){
-    ctx.fillStyle = "rgba(0,22,22,1)";
+    ctx.fillStyle = "rgb(86,26,4)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(background, 10, 10);
     drawLoops(players);
     handleParticles();
     handleExplosionWaves();

@@ -2,7 +2,7 @@ class Player{
     constructor(color, name){
         this.x = 200;
         this.y = 200
-        this.health = 100;
+        this.health = 10;
         this.color = color
         this.speedTotal = 2;
         this.speedX = 0;
@@ -30,13 +30,18 @@ class Player{
     }
 
     move() {
-        if (this.x <= this.targetPosX + Math.abs(this.speedX) && this.x >= this.targetPosX - Math.abs(this.speedX) &&
-            this.y <= this.targetPosY + Math.abs(this.speedY) && this.y >= this.targetPosY - Math.abs(this.speedY)) {
-            this.speedX = 0;
-            this.speedY = 0;
+        if (this.health > 0){
+            if (this.x <= this.targetPosX + Math.abs(this.speedX) && this.x >= this.targetPosX - Math.abs(this.speedX) &&
+                this.y <= this.targetPosY + Math.abs(this.speedY) && this.y >= this.targetPosY - Math.abs(this.speedY)) {
+                this.speedX = 0;
+                this.speedY = 0;
+            }
+            this.x = this.x + this.speedX + this.knockbackX;
+            this.y = this.y + this.speedY + this.knockbackY;
+        } else{
+            this.x += this.knockbackX;
+            this.y += this.knockbackY;
         }
-        this.x = this.x + this.speedX + this.knockbackX;
-        this.y = this.y + this.speedY + this.knockbackY;
         this.reduceKnockback();
     }
 

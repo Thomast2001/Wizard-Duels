@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
 
     socket.on('moveClick', (click) => {
         players[socket.id].calcSpeed(click.x, click.y);
+        socket.broadcast.emit("move", {'id': socket.id, x: click.x, y: click.y});
     })
 
     socket.on('fireball', targetPos => {
@@ -48,9 +49,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('teleport', pos => {
-        A.teleport(players[socket.id], pos);
-        players[socket.id].calcSpeed(pos.x, pos.y);
-        socket.broadcast.emit('teleport', {'playerID': socket.id, 'pos': pos})
+        if (players[socket.id].health > 0) {
+            A.teleport(players[socket.id], pos);
+            players[socket.id].calcSpeed(pos.x, pos.y);
+            socket.broadcast.emit('teleport', {'playerID': socket.id, 'pos': pos})
+        }
     })
 
     socket.on('airwave', () => {
