@@ -1,7 +1,7 @@
 const canvas = document.getElementById("game_canvas");
 const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 1800;
+canvas.height = 900;
 ctx.font = "12px serif";
 let socket = io();
 console.log(window.location.href);
@@ -119,6 +119,13 @@ canvas.addEventListener("keydown", (event) => {
                 players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
                 // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
                 break;
+            case "Escape":
+                let menu = document.querySelector("#game_menu");
+                if (menu.style.display === "none") {
+                    menu.style.display = "block";
+                  } else {
+                    menu.style.display = "none";
+                  }
             default:
                 break;
         }
@@ -126,13 +133,17 @@ canvas.addEventListener("keydown", (event) => {
 });
 
 canvas.addEventListener("mousemove", (event) => {
-    mouse.x = event.x;
-    mouse.y = event.y;
+    var rect = canvas.getBoundingClientRect(), // abs. size of element
+    scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for x
+    scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for y
+
+    mouse.x = (event.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+    mouse.y = (event.clientY - rect.top) * scaleY     // been adjusted to be relative to element
 })
 
 canvas.addEventListener("click", (event) => {
-    players[socket.id].calcSpeed(event.x, event.y);
-    socket.emit("moveClick", {'x': event.x, 'y': event.y})
+    players[socket.id].calcSpeed(mouse.x, mouse.y);
+    socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
 })
 
 socket.on("newPlayer", (newPlayer) => {
@@ -194,7 +205,7 @@ setInterval(() => {
 function animate(){
     ctx.fillStyle = "rgb(86,26,4)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background, 10, 10);
+    ctx.drawImage(background, 0, 0);
     drawLoops(players);
     handleParticles();
     handleExplosionWaves();

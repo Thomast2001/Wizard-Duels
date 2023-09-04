@@ -82,7 +82,6 @@ class Player{
 
 
     handleAnimation() {
-        console.log(this.dead)
         this.frameX = spriteSize * this.animationFrame;
         this.animationFrame++;
         if (this.animationFrame > animationStates[this.animationIndex].frames) {

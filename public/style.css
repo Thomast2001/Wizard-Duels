@@ -1,8 +1,46 @@
 #game_canvas{
    position: absolute;
    background: black;
-   width: 100%;
+   width: auto;
    height: 100%;
-   left: 0;
    top: 0; 
+   padding: 0;
+   margin: auto;
+   display: block;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index:1
+}
+
+#game_menu{
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 50%;
+  width: 50%;
+}
+
+
+
+button {
+  position: relative;
+  display: block;
+  scale: 2;
+  margin-top: 2%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-25%, -25%);
+}
+
+#server_browser{
+  height: 100%;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(82, 82, 82, 0.493);
 }
