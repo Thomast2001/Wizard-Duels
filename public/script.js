@@ -105,15 +105,15 @@ canvas.addEventListener("keydown", (event) => {
                 //players[socket.id].speedX = 0;
                 //players[socket.id].speedY = 0;
                 break;
+            case "w":
+                socket.emit("airwave");
+                break;
             case "e":
                 socket.emit('teleport', mouse);
                 teleport(players[socket.id], mouse);
                 // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
                 players[socket.id].calcSpeed(mouse.x, mouse.y);
                 players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-                break;
-            case "s":
-                socket.emit("airwave");
                 break;
             case "d":
                 players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
@@ -199,6 +199,7 @@ setInterval(() => {
 setInterval(() => {
     for (let id in players) {
         players[id].handleAnimation();
+        console.log(players);
     }
 }, 110);
 

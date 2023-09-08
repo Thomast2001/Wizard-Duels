@@ -12,22 +12,22 @@ class Fireball{
         this.y += this.speed.y;
     }
 
-    collisionCheck(index, fireballs, players) {
-        for (let id in players) {
+    collisionCheck(index, fireballs, players, room) {
+        //for (let id in players) {
+        room.playerIDs.forEach(id => {
             if (this.playerID != id &&
                 this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
                 this.y > players[id].y - 20 && this.y < players[id].y + 20) {
                     players[id].knockback(this.speed.x * 2, this.speed.y * 2);
                     players[id].health -= this.damage;
-                    fireballs.splice(index, 1);
+                    fireballs[room.name].splice(index, 1);
+            } else if (this.x < 0 || this.x > 2000 || this.y < 0 || this.y > 2000){
+                    fireballs[room.name].splice(index,1);
             }
-        }
-        if (this.x < 0 || this.x > 2000 || this.y < 0 || this.y > 2000){
-            fireballs.splice(index,1);
-        }
+        });
     }
 }
-
+    
 function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
     let xDiff = mouseX - posX;
     let yDiff = mouseY - posY;
@@ -53,9 +53,9 @@ function teleport(player, pos){
     player.y = teleportPos.y;
 }
 
-function airwave(players, casterID, fireballs){
+function airwave(players, casterID, playerIDs, fireballs){
     let multiplier = 6;
-    for (let playerID in players) {
+    playerIDs.forEach(playerID => {
         if (playerID != casterID) {
             let xDiff = players[playerID].x - players[casterID].x;
             let yDiff = players[playerID].y - players[casterID].y;
@@ -66,10 +66,11 @@ function airwave(players, casterID, fireballs){
                 players[playerID].knockbackY = (200 / distanceNerf) * (yDiff / distance) * multiplier;
             }
         }
-    }
-    // fireballs.forEach( (fireball, index) => {
-    //     let xDiff = players[playerID].x - players[casterID].x;
-    //     let yDiff = players[playerID].y - players[casterID].y;
+    });
+        
+        // fireballs.forEach( (fireball, index) => {
+            //     let xDiff = players[playerID].x - players[casterID].x;
+            //     let yDiff = players[playerID].y - players[casterID].y;
     //     distance = Math.round(Math.hypot(xDiff, yDiff));
     //     if (distance != 0 && distance < 200) {
     // });
