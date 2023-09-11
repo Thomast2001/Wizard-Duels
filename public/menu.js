@@ -1,4 +1,9 @@
-const createLobbyForm = document.getElementById('createLobbyForm');
+const createLobbyForm = document.querySelector('#createLobbyForm');
+const mainMenu = document.querySelector('#main_menu')
+const roomTableBody = document.querySelector("#lobby_table");
+const lobbyBrowser = document.querySelector("#lobby_browser");
+const chooseName = document.querySelector("#chooseName");
+
 document.querySelector("#refreshButton").addEventListener("click", refreshLobbies);
 let playerName = "player99";
 
@@ -13,6 +18,39 @@ document.body.addEventListener('keydown', event => {
       }
     }
 })
+
+function openMenu(menu){
+  mainMenu.style.display = 'none';
+  lobbyBrowser.style.display = 'none';
+  chooseName.style.display = 'none';
+  // options.style.display = 'none';
+
+  switch (menu) {
+    case "mainMenu":
+      mainMenu.style.display = 'block';
+      break;
+    case "lobbyBrowser":
+      lobbyBrowser.style.display = 'block';
+      break;
+    case "chooseName":
+      chooseName.style.display = 'block';
+    default:
+      break;
+  }
+}
+
+
+document.querySelector('#playButton').addEventListener('click', () => {
+  openMenu("lobbyBrowser");
+})
+
+document.querySelector('#chooseNameButton').addEventListener('click', () => {
+  playerName = document.querySelector('#nameInput').value;
+  openMenu("mainMenu");
+})
+
+
+
 
 
 createLobbyForm.addEventListener('submit', (e) => { // Creating a lobby
@@ -30,11 +68,7 @@ createLobbyForm.addEventListener('submit', (e) => { // Creating a lobby
 });
 
 
-let roomTableBody = document.querySelector("#lobby_table");
-
 function refreshLobbies() {
-    playerName = document.querySelector('#player_name').value; // Change later !!!!!!!
-
     fetch('/rooms')
       .then(response => response.json())
       .then(data => {

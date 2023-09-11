@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
         /////////////////////////////////
 
     socket.on("joinRoom", msg => {
-        if (currentRoom == null) {
+        if (currentRoom == null) { // if player is not already in a room
             let roomJoined = msg.room
             let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
 
@@ -40,6 +40,7 @@ io.on('connection', (socket) => {
             currentRoom = roomJoined;
             socket.join(roomJoined);
 
+            players[socket.id].name = msg.playerName;
             rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
                 socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name}); 
             })
@@ -57,6 +58,7 @@ io.on('connection', (socket) => {
             socket.emit('error', 'Player name does not meet the requirements');
         }
 
+        players[socket.id].name = room.playerName;
         rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, password: room.password }); // Create the room
         fireballs[room.roomName] = [] // Create array for fireballs
 
@@ -124,7 +126,8 @@ function findRoomIndex(rooms, name){
 
 let players = {};
 let updatedPlayers = {} // Used for sending player positions and health to connected clients
-let rooms = [{ name: "room1", playerIDs: [], gameStarted: false }, { name: "room2", playerIDs: [], gameStarted: false }];
+//let rooms = [{ name: "room1", playerIDs: [], gameStarted: false }, { name: "room2", playerIDs: [], gameStarted: false }];
+let rooms = [];
 let fireballs = {room1: [], room2: []};
 
 

@@ -24,7 +24,14 @@
   width: 50%;
 }
 
+#main_menu {
+  display: none;
+}
 
+#chooseName {
+  margin-top: 10%;
+  text-align: center;
+} 
 
 button {
   position: relative;
@@ -36,11 +43,11 @@ button {
   transform: translate(-25%, -25%);
 }
 
-#server_browser{
+#lobby_browser{
   height: 100%;
   width: 100%;
-  top: 50%;
-  left: 50%;
+
   transform: translate(-50%, -50%);
   background-color: rgba(82, 82, 82, 0.493);
+  display: none;
 }
