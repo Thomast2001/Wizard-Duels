@@ -1,5 +1,6 @@
 const Player = require('./serverClasses/player');
 const A = require('./serverClasses/abilities');
+const validate = require('./validate.js');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -24,23 +25,50 @@ server.listen(port, () => {
 io.on('connection', (socket) => {
     console.log("user con")
     players[socket.id] = new Player(`hsl(${Math.random()*360},100%, 50%)`, `player${Math.floor(Math.random()*10)}`);
-    let currentRoom;
+    let currentRoom = null;
 
-    if (Math.random() > 0.5) {
-        currentRoom = "room1";
-        rooms[0].playerIDs.push(socket.id);
-        socket.join("room1");}
-    else{
-        currentRoom = "room2";
-        rooms[1].playerIDs.push(socket.id);
-        socket.join("room2");
-    }
+        /////////////////////////////////
+        // Player is not in a game yet //
+        /////////////////////////////////
 
-    rooms[findRoomIndex(rooms, currentRoom)].playerIDs.forEach(id => {  // Send all the existing players to the new player
-        socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name}); 
+    socket.on("joinRoom", msg => {
+        if (currentRoom == null) {
+            let roomJoined = msg.room
+            let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
+
+            rooms[roomIndex].playerIDs.push(socket.id);
+            currentRoom = roomJoined;
+            socket.join(roomJoined);
+
+            rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
+                socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name}); 
+            })
+
+            socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
+        }
     })
 
-    socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
+    socket.on("createRoom", room => {
+        if (!validate.LobbyData(room.roomName, room.password)){ // Validate the room data
+            socket.emit('error', 'Invalid lobby data');
+        }
+
+        if (!validate.PlayerName(room.playerName)){  // Validate the player name
+            socket.emit('error', 'Player name does not meet the requirements');
+        }
+
+        rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, password: room.password }); // Create the room
+        fireballs[room.roomName] = [] // Create array for fireballs
+
+        socket.join(room.roomName); // Player joins the new room/lobby
+        currentRoom = room.roomName;
+        socket.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name}); 
+    })
+
+
+        /////////////////////////////////
+        // Player is in a started game //
+        /////////////////////////////////
 
     socket.on('moveClick', (click) => {
         players[socket.id].calcSpeed(click.x, click.y);
@@ -71,9 +99,11 @@ io.on('connection', (socket) => {
         delete players[socket.id];
 
         let roomIndex = findRoomIndex(rooms, currentRoom);
-        let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
-        rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
-        console.log(rooms[roomIndex].playerIDs);
+        if (currentRoom != null){
+            let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
+            rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
+            console.log(rooms[roomIndex].playerIDs);
+        }
         
         //if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
         //    rooms.splice(roomIndex, 1);
@@ -94,7 +124,7 @@ function findRoomIndex(rooms, name){
 
 let players = {};
 let updatedPlayers = {} // Used for sending player positions and health to connected clients
-let rooms = [{ name: "room1", playerIDs: [] }, { name: "room2", playerIDs: [] }];
+let rooms = [{ name: "room1", playerIDs: [], gameStarted: false }, { name: "room2", playerIDs: [], gameStarted: false }];
 let fireballs = {room1: [], room2: []};
 
 
@@ -106,7 +136,7 @@ let updateInterval = setInterval(() => {
             updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
             io.to(room.name).emit("updatePlayers", updatedPlayers);
         });
-
+        
         fireballs[room.name].forEach((fireball, index) => {
             fireball.move();
             fireball.collisionCheck(index, fireballs, players, room);  
@@ -116,3 +146,7 @@ let updateInterval = setInterval(() => {
     });
 
 }, 15);
+
+app.get('/rooms', (req, res) => { 
+    res.json(rooms);
+});

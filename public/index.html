@@ -20,8 +20,35 @@
         </button>
     </div>
 
+    
     <div id="server_browser">
-        
+        <input id="player_name">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Looby Name</th>
+                    <th>Joinable</th>
+                </tr>
+                </thead>
+                <tbody id="lobby_table">
+
+                <tbody>
+            </table>
+        </div>
+
+        <form id="createLobbyForm">
+            <label for="roomName">Room Name:</label>
+            <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="passwordInput" name="password" maxlength="20">
+            
+            <button type="submit">Create Lobby</button>
+        </form>
+
+
+        <button id="refreshButton">Refresh</button>
     </div>
 </div>
 
@@ -31,5 +58,6 @@
     <script src="Classes/abilities.js"></script>
     <script src="Classes/particle.js"></script>
     <script src="script.js"></script>
+    <script src="menu.js"></script>
 </body>
 </html>

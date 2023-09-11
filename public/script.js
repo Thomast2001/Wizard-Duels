@@ -119,13 +119,6 @@ canvas.addEventListener("keydown", (event) => {
                 players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
                 // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
                 break;
-            case "Escape":
-                let menu = document.querySelector("#game_menu");
-                if (menu.style.display === "none") {
-                    menu.style.display = "block";
-                  } else {
-                    menu.style.display = "none";
-                  }
             default:
                 break;
         }
