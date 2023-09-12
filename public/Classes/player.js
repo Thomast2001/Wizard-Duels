@@ -23,41 +23,56 @@ class Player{
         this.animationFrame = 0;
         this.animationIndex = 0;
         this.frames;
+        this.stunned = false;
     }
 
     calcSpeed(mouseX, mouseY) {
+        if (this.health > 0 && !this.stunned) {
         let xDiff = mouseX - this.x;
         let yDiff = mouseY - this.y;
 
-        if (xDiff != 0 && yDiff != 0) {
-            this.targetPosX = mouseX;
-            this.targetPosY = mouseY;
-            let hyp = Math.hypot(xDiff, yDiff);
-            this.speedX = xDiff / hyp * this.speedTotal;
-            this.speedY = yDiff / hyp * this.speedTotal;
-            this.changeOrientation(xDiff)
-            this.changeAnimationState("run");
+            if (xDiff != 0 && yDiff != 0) {
+                this.targetPosX = mouseX;
+                this.targetPosY = mouseY;
+                let hyp = Math.hypot(xDiff, yDiff);
+                this.speedX = xDiff / hyp * this.speedTotal;
+                this.speedY = yDiff / hyp * this.speedTotal;
+                this.changeOrientation(xDiff)
+                this.changeAnimationState("run");
+            }
         }
     }
 
-    updateHealth(health, playerID) {
-        if (this.health != health) {
-            healthNumbers.push(new healthChangeNumber(this.x, this.y, health-this.health, playerID));
-            this.health = health; 
-            if (health <= 0) {
+    updateHealth(updatedHealth, playerID) {
+        if (this.health != updatedHealth) {
+            healthNumbers.push(new healthChangeNumber(this.x, this.y, updatedHealth-this.health, playerID));
+            this.health = updatedHealth; 
+            if (updatedHealth <= 0) {
                 this.changeAnimationState("death");
             }
         }
     }
 
     move() {
-        if (this.x < this.targetPosX + Math.abs(this.speedX) && this.x > this.targetPosX - Math.abs(this.speedX)) {
-            this.speedX = 0;
-            this.speedY = 0;
-            this.changeAnimationState("idle");
+        if (this.health > 0 && !this.stunned) {
+            if (this.x < this.targetPosX + Math.abs(this.speedX) && this.x > this.targetPosX - Math.abs(this.speedX)) {
+                this.speedX = 0;
+                this.speedY = 0;
+                this.changeAnimationState("idle");
+            }
+            this.x += this.speedX;
+            this.y += this.speedY;
         }
-        this.x += this.speedX;
-        this.y += this.speedY;
+    }
+
+    stun(msStunned, players, id) {
+        this.changeAnimationState("idle");
+        this.stunned = true;
+        this.speedX = 0;
+        this.speedY = 0;
+        setTimeout(() => {
+            players[id].stunned = false; 
+        }, msStunned);
     }
     
     changeOrientation(xDiff){
@@ -122,7 +137,6 @@ class Player{
 //        ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
 //        ctx.fill();
         if (this.dead == false) {
-            console.log(this.name)
             if (this.animationFrame > animationStates[this.animationIndex].frames){
                 this.animationFrame = 0;
             }

@@ -98,3 +98,7 @@ function refreshLobbies() {
 
 
 refreshLobbies()
+
+
+//only for game testing: 
+openMenu("lobbyBrowser");

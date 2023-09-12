@@ -32,7 +32,6 @@ function drawLoops(players){
     for (let id in players) {
         players[id].draw();
     }
-
 }
 
 
@@ -41,6 +40,7 @@ let fireballs = [];
 let particles = [];
 let healthNumbers = [];
 let explosionsWaves = [];
+let lightnings = [];
 
 function collisionWithPlayer(obj){
     for (let id in players) {
@@ -94,8 +94,18 @@ function handleExplosionWaves(){
     });
 }
 
+function handleLightnings(){
+    lightnings.forEach( (lightning, index) => {
+        lightning.draw();
+        lightning.framesLeft--;
+        if (lightning.framesLeft < 0){
+            lightnings.splice(index,1);
+        }
+    });
+}
+
 canvas.addEventListener("keydown", (event) => {
-    if (players[socket.id].health > 0) {
+    if (players[socket.id].health > 0 && !players[socket.id].stunned) {
         switch (event.key) {
             case "q":
                 socket.emit('fireball', mouse);
@@ -110,10 +120,20 @@ canvas.addEventListener("keydown", (event) => {
                 break;
             case "e":
                 socket.emit('teleport', mouse);
-                teleport(players[socket.id], mouse);
-                // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
                 players[socket.id].calcSpeed(mouse.x, mouse.y);
                 players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+                teleport(players[socket.id], mouse);
+                // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
+                break;
+            case "r":
+                let lightning = createLightning(lightnings, mouse.x, mouse.y);
+                let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
+                if (playerHit) {
+                    socket.emit("lightning", { playerHit: playerHit })
+                    players[playerHit].stun(5000, players, playerHit); // Stun the player hit
+                } else {
+                    socket.emit("lightning", { x: mouse.x, y: mouse.y })
+                }
                 break;
             case "d":
                 players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
@@ -174,13 +194,22 @@ socket.on("fireball", (fb) => {
 });
 
 socket.on('teleport', (tp) => {
-    teleport(players[tp.playerID], tp.pos);
     players[tp.playerID].calcSpeed(tp.pos.x, tp.pos.y);
+    teleport(players[tp.playerID], tp.pos);
 });
 
 socket.on('airwave', (id) => {
     explosionsWaves.push(new ExplosionWave(players[id].x, players[id].y, 19, "255,255,255"));   
 })
+
+socket.on('lightning', (lightning) => {
+    if (lightning.playerHit) {
+        createLightning(lightnings, players[lightning.playerHit].x, players[lightning.playerHit].y);
+        players[lightning.playerHit].stun(5000, players, lightning.playerHit); // Stun the player hit
+    } else {
+        createLightning(lightnings, lightning.x, lightning.y);
+    }
+});
 
 setInterval(() => {
     for (let id in players) {
@@ -192,18 +221,18 @@ setInterval(() => {
 setInterval(() => {
     for (let id in players) {
         players[id].handleAnimation();
-        console.log(players);
     }
 }, 110);
 
 function animate(){
     ctx.fillStyle = "rgb(86,26,4)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    //ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0);
     drawLoops(players);
     handleParticles();
     handleExplosionWaves();
     handleHealthNumbers();
+    handleLightnings();
     requestAnimationFrame(animate);
 }
 animate();

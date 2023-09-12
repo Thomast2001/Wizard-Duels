@@ -73,28 +73,44 @@ io.on('connection', (socket) => {
         /////////////////////////////////
 
     socket.on('moveClick', (click) => {
-        players[socket.id].calcSpeed(click.x, click.y);
-        socket.to(currentRoom).emit("move", {'id': socket.id, x: click.x, y: click.y});
+        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+            players[socket.id].calcSpeed(click.x, click.y);
+            socket.to(currentRoom).emit("move", {'id': socket.id, x: click.x, y: click.y});
+        }
     })
 
     socket.on('fireball', targetPos => {
-        fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
-        socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
-                        'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
+        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+            fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
+            socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
+                            'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
+        }
     })
 
     socket.on('teleport', pos => {
-        if (players[socket.id].health > 0) {
-            A.teleport(players[socket.id], pos);
+        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
             players[socket.id].calcSpeed(pos.x, pos.y);
+            A.teleport(players[socket.id], pos);
             socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
         }
     })
 
     socket.on('airwave', () => {
-        io.to(currentRoom).emit('airwave', socket.id);
-        A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, fireballs);
-    })
+        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+            io.to(currentRoom).emit('airwave', socket.id);
+            A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, fireballs);
+        }
+    }) 
+
+    socket.on('lightning', (lightning) => {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+            if (lightning.playerHit) {
+                players[lightning.playerHit].health -= 1;
+                players[lightning.playerHit].stun(5000, players, lightning.playerHit); // Stun the player hit
+            } 
+            socket.to(currentRoom).emit('lightning', lightning)
+        }
+    });
 
     socket.on('disconnect', () => {
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
@@ -137,8 +153,8 @@ let updateInterval = setInterval(() => {
         room.playerIDs.forEach(id => {
             players[id].move();
             updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
-            io.to(room.name).emit("updatePlayers", updatedPlayers);
         });
+        io.to(room.name).emit("updatePlayers", updatedPlayers);
         
         fireballs[room.name].forEach((fireball, index) => {
             fireball.move();

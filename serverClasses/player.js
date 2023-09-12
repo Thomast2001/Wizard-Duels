@@ -12,6 +12,7 @@ class Player{
         this.knockbackX = 0;
         this.knockbackY = 0;
         this.name = name;
+        this.stunned = false;
     }
 
     calcSpeed(mouseX, mouseY) {
@@ -30,7 +31,7 @@ class Player{
     }
 
     move() {
-        if (this.health > 0){
+        if (this.health > 0 && !this.stunned){
             if (this.x <= this.targetPosX + Math.abs(this.speedX) && this.x >= this.targetPosX - Math.abs(this.speedX) &&
                 this.y <= this.targetPosY + Math.abs(this.speedY) && this.y >= this.targetPosY - Math.abs(this.speedY)) {
                 this.speedX = 0;
@@ -63,6 +64,15 @@ class Player{
                 this.knockbackY = 0;
             }
         } 
+    }
+
+    stun(msStunned, players, id) {
+        this.stunned = true;
+        this.speedX = 0;
+        this.speedY = 0;
+        setTimeout(() => {
+            players[id].stunned = false; 
+        }, msStunned);
     }
 }
 

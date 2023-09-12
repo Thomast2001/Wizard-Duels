@@ -49,26 +49,7 @@ function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
     return {'x': speedX, 'y': speedY};
 }
 
-// class teleport{
-//     constructor(pos){
-//         this.pos = pos
-//         this.cooldown = 10;
-//     }
-
-//     cast(player){
-//         for (let i = 0; i < 5; i++) {
-//             for (let j = 0; j < 5; j++) {
-//                 particles.push(new Particle(player.x - 5 + 2*i, player.y - 5 + 2*j, 1, 2, "rgba(0,255,255,150)"));
-//                 particles.push(new Particle(this.pos.x - 5 + 2*i, this.pos.y - 5 + 2*j, 1, 2, "rgba(0,255,255,150)"));
-//             }
-//         }
-//         player.x = this.pos.x
-//         player.y = this.pos.y
-//     }
-// }
-
 function teleport(player, pos){
-    console.log(pos);
     let teleportPos = {'x': pos.x, 'y': pos.y}
     let maxTeleportDist = 200;
     let xDiff = teleportPos.x - player.x;
@@ -87,3 +68,58 @@ function teleport(player, pos){
     player.x = teleportPos.x
     player.y = teleportPos.y
 }
+
+
+class Lightning {
+    constructor(x, y){
+        this.xHit = x;
+        this.yHit = y;
+        this.x = x;
+        this.y = y;
+        this.lightningLines = [[x,y]];
+        this.framesLeft = 90;
+    }
+
+    generateLightning(){
+        while(this.y >= 0) {
+            this.x = this.x + Math.round(Math.random() * 70) - 35;
+            this.y = this.y - 50;
+            this.lightningLines.push([this.x, this.y]);
+        }
+    }
+    
+    collisionCheck(players) {
+        for (let id in players) {
+            if (socket.id != id &&
+                this.xHit > players[id].x - 20 && this.xHit < players[id].x + 20 &&
+                this.yHit > players[id].y - 20 && this.yHit < players[id].y + 20) {
+                    return id;
+            }
+        }
+        return false; // No player hit
+    }
+
+    draw() {
+        ctx.fillStyle = `rgba(255, 255, 255, ${1 * this.framesLeft}%)`; //${25 * this.framesLeft} 
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.strokeStyle = `rgba(244, 100, 255, ${2 * this.framesLeft}%)`;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(this.lightningLines[0][0], this.lightningLines[0][1]);
+        for (let i = 1; i < this.lightningLines.length; i++) {
+            ctx.lineTo(this.lightningLines[i][0], this.lightningLines[i][1])
+        }
+        ctx.stroke();
+
+        ctx.lineWidth = 1;
+    }
+
+}
+
+function createLightning(lightnings, x, y){
+    let newLightning = new Lightning(x, y);
+    newLightning.generateLightning();
+    lightnings.push(newLightning);
+    return newLightning;
+}
+
