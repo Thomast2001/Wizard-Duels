@@ -13,6 +13,7 @@ class Player{
         this.knockbackY = 0;
         this.name = name;
         this.stunned = false;
+        this.onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
     }
 
     calcSpeed(mouseX, mouseY) {
@@ -73,6 +74,13 @@ class Player{
         setTimeout(() => {
             players[id].stunned = false; 
         }, msStunned);
+    }
+
+    cooldown(ability, cooldown){
+        this.onCooldown[ability] = true; 
+        setTimeout(() => {
+            this.onCooldown[ability] = false; 
+        }, cooldown);
     }
 }
 

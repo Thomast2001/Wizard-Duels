@@ -114,13 +114,13 @@ canvas.addEventListener("keydown", (event) => {
                     fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
-                    cooldown(onCooldown, "fireball", 2000);
+                    cooldown(onCooldown, "fireball", 100);
                 }
                 break;
             case "w":
                 if (!onCooldown.airwave) {
                     socket.emit("airwave");
-                    cooldown(onCooldown, "airwave", 2000);
+                    cooldown(onCooldown, "airwave", 100);
                 }
                 break;
             case "e":
@@ -142,7 +142,7 @@ canvas.addEventListener("keydown", (event) => {
                     } else {
                         socket.emit("lightning", { x: mouse.x, y: mouse.y })
                     }
-                    cooldown(onCooldown, "lightning", 1000);
+                    cooldown(onCooldown, "lightning", 100);
                 }
                 break;
             case "d":

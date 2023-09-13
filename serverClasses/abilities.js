@@ -15,7 +15,7 @@ class Fireball{
     collisionCheck(index, fireballs, players, room) {
         //for (let id in players) {
         room.playerIDs.forEach(id => {
-            if (this.playerID != id &&
+            if (this.playerID != id && players[id].health > 0 &&
                 this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
                 this.y > players[id].y - 20 && this.y < players[id].y + 20) {
                     players[id].knockback(this.speed.x * 2, this.speed.y * 2);

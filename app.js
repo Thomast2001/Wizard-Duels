@@ -80,35 +80,39 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fireball', targetPos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['fireball']) {
             fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
             socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                             'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
+            players[socket.id].cooldown('fireball', 2000);
         }
     })
-
-    socket.on('teleport', pos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
-            players[socket.id].calcSpeed(pos.x, pos.y);
-            A.teleport(players[socket.id], pos);
-            socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
-        }
-    })
-
+    
     socket.on('airwave', () => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['airwave']) {
             io.to(currentRoom).emit('airwave', socket.id);
             A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, fireballs);
+            players[socket.id].cooldown('airwave', 1000);
         }
     }) 
 
+    socket.on('teleport', pos => {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['teleport']) {
+            players[socket.id].calcSpeed(pos.x, pos.y);
+            A.teleport(players[socket.id], pos);
+            socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
+            players[socket.id].cooldown('teleport', 100);
+        }
+    })
+
     socket.on('lightning', (lightning) => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['lightning']) {
             if (lightning.playerHit) {
                 players[lightning.playerHit].health -= 1;
                 players[lightning.playerHit].stun(5000, players, lightning.playerHit); // Stun the player hit
             } 
             socket.to(currentRoom).emit('lightning', lightning)
+            players[socket.id].cooldown('lightning', 5000);
         }
     });
 

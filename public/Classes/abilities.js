@@ -20,7 +20,7 @@ class Fireball{
     
     collisionCheck(index, fireballs, players) {
         for (let id in players) {
-            if (this.playerID != id &&
+            if (this.playerID != id && players[id].health > 0 &&
                 this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
                 this.y > players[id].y - 20 && this.y < players[id].y + 20) {
                     this.explode(); 
@@ -124,9 +124,9 @@ function createLightning(lightnings, x, y){
 }
 
 
-function cooldown(onCooldown, ability){
+function cooldown(onCooldown, ability, cooldown){
     onCooldown[ability] = true; 
     setTimeout(() => {
         onCooldown[ability] = false; 
-    }, 1000);
+    }, cooldown);
 }
