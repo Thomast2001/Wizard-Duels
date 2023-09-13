@@ -38,7 +38,9 @@ class Player{
                 this.speedX = xDiff / hyp * this.speedTotal;
                 this.speedY = yDiff / hyp * this.speedTotal;
                 this.changeOrientation(xDiff)
-                this.changeAnimationState("run");
+                if (animationStates[this.animationIndex].name != 'attack'){ // Prevent cancelling the attack animation
+                    this.changeAnimationState("run");
+                }
             }
         }
     }
@@ -58,7 +60,9 @@ class Player{
             if (this.x < this.targetPosX + Math.abs(this.speedX) && this.x > this.targetPosX - Math.abs(this.speedX)) {
                 this.speedX = 0;
                 this.speedY = 0;
-                this.changeAnimationState("idle");
+                if (animationStates[this.animationIndex].name != 'attack'){
+                    this.changeAnimationState("idle");
+                }
             }
             this.x += this.speedX;
             this.y += this.speedY;
@@ -84,7 +88,6 @@ class Player{
     }
 
     changeAnimationState(newState) {
-        //console.log("ny animation" + this.animationFrame)
         if (newState != animationStates[this.animationIndex].name){
             this.frameX = 0;
             this.animationFrame = 0;
@@ -92,7 +95,6 @@ class Player{
         }
         
         this.frameY = spriteSize * this.animationIndex + this.orientation * 4 * spriteSize;
-        //console.log("ny animation" + this.animationFrame)
     }
 
 
@@ -116,17 +118,6 @@ class Player{
                     this.animationFrame = 0;
                     break;
             }
- //           if (animationStates[this.animationIndex].name != "attack") {
- //               this.animationFrame = 0;
- //           } else if (this.speedX != 0){        // go back to idle/run when finished casting ability
- //               this.changeOrientation(this.targetPosX - this.x)
- //               this.changeAnimationState("run"); 
- //           } else {
- //               this.changeAnimationState("idle");
- //           }
- //           else if (animationStates[this.animationIndex].name != "death"){
- //               this.dead = true
- //           }
         }
         
     }

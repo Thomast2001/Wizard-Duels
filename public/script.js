@@ -41,6 +41,7 @@ let particles = [];
 let healthNumbers = [];
 let explosionsWaves = [];
 let lightnings = [];
+let onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
 
 function collisionWithPlayer(obj){
     for (let id in players) {
@@ -108,31 +109,40 @@ canvas.addEventListener("keydown", (event) => {
     if (players[socket.id].health > 0 && !players[socket.id].stunned) {
         switch (event.key) {
             case "q":
-                socket.emit('fireball', mouse);
-                fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
-                players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-                players[socket.id].changeAnimationState("attack");
-                //players[socket.id].speedX = 0;
-                //players[socket.id].speedY = 0;
+                if (!onCooldown.fireball) {
+                    socket.emit('fireball', mouse);
+                    fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
+                    players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+                    players[socket.id].changeAnimationState("attack");
+                    cooldown(onCooldown, "fireball", 2000);
+                }
                 break;
             case "w":
-                socket.emit("airwave");
+                if (!onCooldown.airwave) {
+                    socket.emit("airwave");
+                    cooldown(onCooldown, "airwave", 2000);
+                }
                 break;
             case "e":
-                socket.emit('teleport', mouse);
-                players[socket.id].calcSpeed(mouse.x, mouse.y);
-                players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-                teleport(players[socket.id], mouse);
-                // socket.emit("moveClick", {'x': mouse.x, 'y': mouse.y})
+                if (!onCooldown.teleport) {
+                    socket.emit('teleport', mouse);
+                    players[socket.id].calcSpeed(mouse.x, mouse.y);
+                    players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
+                    teleport(players[socket.id], mouse);
+                    cooldown(onCooldown, "teleport", 100);
+                }
                 break;
             case "r":
-                let lightning = createLightning(lightnings, mouse.x, mouse.y);
-                let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
-                if (playerHit) {
-                    socket.emit("lightning", { playerHit: playerHit })
-                    players[playerHit].stun(5000, players, playerHit); // Stun the player hit
-                } else {
-                    socket.emit("lightning", { x: mouse.x, y: mouse.y })
+                if (!onCooldown.lightning) {
+                    let lightning = createLightning(lightnings, mouse.x, mouse.y);
+                    let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
+                    if (playerHit) {
+                        socket.emit("lightning", { playerHit: playerHit })
+                        players[playerHit].stun(5000, players, playerHit); // Stun the player hit
+                    } else {
+                        socket.emit("lightning", { x: mouse.x, y: mouse.y })
+                    }
+                    cooldown(onCooldown, "lightning", 1000);
                 }
                 break;
             case "d":
