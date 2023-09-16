@@ -6,54 +6,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css/css/nes.css" rel="stylesheet" />
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
 </head>
 <body>
 <canvas tabindex='0' id="game_canvas"></canvas>
 
 <div id="game_menu">
 
-    <div id="chooseName">
-        <input id="nameInput" placeholder="Enter Name">
-        <button id="chooseNameButton">Continue</button>
+    <div id="chooseName" class="main_menu">
+        <input id="nameInput" placeholder="Enter Name" class="nes-input">
+        <button id="chooseNameButton" class="nes-btn is-success menuButtons">Continue</button>
     </div>
     
-    <div id="main_menu">
-        <button id="playButton">
-            Play
-        </button>
-        <button>
-            Options
-        </button>
+    <div id="main_menu" class="main_menu">
+        <button id="playButton" class="nes-btn is-success menuButtons">Play</button>
+        <button class="nes-btn menuButtons">Options</button>
     </div>
 
-    
-    <div id="lobby_browser">
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                <tr>
-                    <th>Looby Name</th>
-                    <th>Joinable</th>
-                </tr>
-                </thead>
-                <tbody id="lobby_table">
-
-                <tbody>
-            </table>
+    <div id="lobby_browser" class="window">
+        <div id="lobby_table_container" class="nes-container">
+            <div id="table_wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="Lobby-name">Looby Name</th>
+                        <th>Players</th>
+                        <th>Joinable</th>
+                        <th>Password</th>
+                    </tr>
+                    </thead>
+                    <tbody id="lobby_table">
+                        
+                    <tbody>
+                </table>
+            </div>
+            <button id="refreshButton" class="browser-button nes-btn">Refresh</button>
         </div>
 
-        <form id="createLobbyForm">
-            <label for="roomName">Room Name:</label>
-            <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="passwordInput" name="password" maxlength="20">
-            
-            <button type="submit">Create Lobby</button>
-        </form>
 
+            <form id="createLobbyForm" class="nes-container">
+                <label for="roomName">Room Name:</label>
+                <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" class="nes-input" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="20">
+                
+                <button type="submit" class="browser-button nes-btn">Create Lobby</button>
+            </form>
 
-        <button id="refreshButton">Refresh</button>
+    </div>
+
+    <div id="waiting_room" class="window nes-container">
+        
     </div>
 </div>
 
@@ -64,5 +70,6 @@
     <script src="Classes/particle.js"></script>
     <script src="script.js"></script>
     <script src="menu.js"></script>
+    <script src="menuText.js"></script>
 </body>
 </html>

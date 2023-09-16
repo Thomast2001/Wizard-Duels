@@ -27,13 +27,13 @@ function openMenu(menu){
 
   switch (menu) {
     case "mainMenu":
-      mainMenu.style.display = 'block';
+      mainMenu.style.display = 'flex';
       break;
     case "lobbyBrowser":
-      lobbyBrowser.style.display = 'block';
+      lobbyBrowser.style.display = 'flex';
       break;
     case "chooseName":
-      chooseName.style.display = 'block';
+      chooseName.style.display = 'flex';
     default:
       break;
   }
@@ -78,13 +78,22 @@ function refreshLobbies() {
         data.forEach(room => {
           const row = document.createElement('tr');
           const nameCell = document.createElement('td');
+          const players = document.createElement('td');
           const joinableCell = document.createElement('td');
+          const password = document.createElement('td');
 
           nameCell.textContent = room.name;
+          players.textContent = `${room.playerIDs.length}/4`;
           joinableCell.textContent = !room.gameStarted;
+          password.textContent = "No";
 
           row.appendChild(nameCell);
+          row.appendChild(players);
           row.appendChild(joinableCell);
+          row.appendChild(password);
+
+          row.classList.add("lobby")
+          row.classList.add("nes-pointer")
 
           row.addEventListener('click', () => { // Joining a lobby once clicked
             socket.emit('joinRoom', { room: room.name, playerName: playerName });
@@ -100,5 +109,3 @@ function refreshLobbies() {
 refreshLobbies()
 
 
-//only for game testing: 
-openMenu("lobbyBrowser");

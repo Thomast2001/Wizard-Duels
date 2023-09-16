@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "nes.css": "^2.3.0",
     "socket.io": "^4.7.1"
   }
 }

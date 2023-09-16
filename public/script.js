@@ -7,7 +7,7 @@ let socket = io();
 console.log(window.location.href);
 background = new Image();
 background.src = window.location.href + "Arena.png";
-
+let effect;
 
 let mouse = {
     "x": undefined,
@@ -18,11 +18,6 @@ canvas.addEventListener("resize", () =>{
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight  
 });
-
-ctx.beginPath();
-ctx.fillStyle = "red";
-ctx.fillRect(50,50,50,50);
-ctx.fill();
 
 function drawLoops(players){
     fireballs.forEach((fireball) => {
@@ -235,14 +230,14 @@ setInterval(() => {
 }, 110);
 
 function animate(){
-    ctx.fillStyle = "rgb(86,26,4)";
-    //ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(background, 0, 0);
-    drawLoops(players);
-    handleParticles();
-    handleExplosionWaves();
-    handleHealthNumbers();
-    handleLightnings();
-    requestAnimationFrame(animate);
+    if (gamePlaying == true) {
+        drawLoops(players);
+        handleParticles();
+        handleExplosionWaves();
+        handleHealthNumbers();
+        handleLightnings();
+        requestAnimationFrame(animate);
+    }
 }
-animate();
+document.onload = animate();
