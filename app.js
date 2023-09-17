@@ -77,7 +77,6 @@ io.on('connection', (socket) => {
                 io.in(currentRoom).emit("startGame"); // Start the game if all players are ready
                 room.gamePlaying = true;
                 room.gameStarted = true;
-                console.log("start");
             }
         }
     })
@@ -153,6 +152,7 @@ io.on('connection', (socket) => {
             rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
             console.log(rooms[roomIndex].playerIDs);
         }
+        roomFunctions.unreadyAllPlayers(io, room, players);
         
         //if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
         //    rooms.splice(roomIndex, 1);
@@ -181,6 +181,11 @@ let fireballs = {room1: [], room2: []};
 let updateInterval = setInterval(() => {
     rooms.forEach(room => {
         if (room.gamePlaying) {
+            if (roomFunctions.allPlayersDead(players, room)) {// If only 1 player is alive, end the game
+                io.in(room.name).emit("endGame");
+                room.gamePlaying = false;
+                roomFunctions.unreadyAllPlayers(io, room, players);
+            }
             updatedPlayers = {};
             room.playerIDs.forEach(id => {
                 players[id].move();
@@ -190,10 +195,8 @@ let updateInterval = setInterval(() => {
             
             fireballs[room.name].forEach((fireball, index) => {
                 fireball.move();
-                fireball.collisionCheck(index, fireballs, players, room);  
+                fireball.collisionCheck(index, fireballs, players, room)
             })
-            
-            io.to(room).emit("updatePlayers", updatedPlayers);
         }
     });
 

@@ -173,8 +173,10 @@ socket.on("startGame", () => {
 })
 
 socket.on("endGame", () => {
-    gamePlaying = false;
-    document.querySelector("#game_menu").style.display = "block"
+    setTimeout(() => {
+        gamePlaying = false;
+        document.querySelector("#game_menu").style.display = "block"
+    }, 2000);
 })
 
 socket.on("unready", (id) => {

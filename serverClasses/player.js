@@ -2,7 +2,7 @@ class Player{
     constructor(color, name){
         this.x = 200;
         this.y = 200
-        this.health = 100;
+        this.health = 10;
         this.color = color
         this.speedTotal = 2;
         this.speedX = 0;
@@ -66,6 +66,13 @@ class Player{
                 this.knockbackY = 0;
             }
         } 
+    }
+
+    takeDamage(damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            return true;
+        }
     }
 
     stun(msStunned, players, id) {

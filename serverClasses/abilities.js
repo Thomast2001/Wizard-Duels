@@ -13,18 +13,21 @@ class Fireball{
     }
 
     collisionCheck(index, fireballs, players, room) {
-        //for (let id in players) {
-        room.playerIDs.forEach(id => {
-            if (this.playerID != id && players[id].health > 0 &&
-                this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
-                this.y > players[id].y - 20 && this.y < players[id].y + 20) {
-                    players[id].knockback(this.speed.x * 2, this.speed.y * 2);
-                    players[id].health -= this.damage;
+        if (this.x < 0 || this.x > 2000 || this.y < 0 || this.y > 2000){
+                fireballs[room.name].splice(index,1);
+                return;
+        }
+        let IDs = room.playerIDs;
+        for (let i = 0; i < IDs.length; i++) {
+            if (this.playerID != IDs[i] && players[IDs[i]].health > 0 &&
+                this.x > players[IDs[i]].x - 20 && this.x < players[IDs[i]].x + 20 &&
+                this.y > players[IDs[i]].y - 20 && this.y < players[IDs[i]].y + 20) {
+                    players[IDs[i]].knockback(this.speed.x * 2, this.speed.y * 2);
+                    players[IDs[i]].health -= this.damage;
                     fireballs[room.name].splice(index, 1);
-            } else if (this.x < 0 || this.x > 2000 || this.y < 0 || this.y > 2000){
-                    fireballs[room.name].splice(index,1);
-            }
-        });
+                    return;
+                }
+            } 
     }
 }
     
