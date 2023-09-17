@@ -14,6 +14,7 @@ class Player{
         this.name = name;
         this.stunned = false;
         this.onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
+        this.ready = false;
     }
 
     calcSpeed(mouseX, mouseY) {

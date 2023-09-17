@@ -1,6 +1,7 @@
 const Player = require('./serverClasses/player');
 const A = require('./serverClasses/abilities');
 const validate = require('./validate.js');
+const roomFunctions = require('./roomFunctions.js');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -59,12 +60,34 @@ io.on('connection', (socket) => {
         }
 
         players[socket.id].name = room.playerName;
-        rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, password: room.password }); // Create the room
+        rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, gamePlaying: false, password: room.password }); // Create the room
         fireballs[room.roomName] = [] // Create array for fireballs
 
         socket.join(room.roomName); // Player joins the new room/lobby
         currentRoom = room.roomName;
         socket.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name}); 
+    })
+
+    socket.on("ready", () => {
+        let room = rooms[findRoomIndex(rooms, currentRoom)];
+        if (!room.gamePlaying) {
+            players[socket.id].ready = true;
+            io.in(currentRoom).emit("ready", socket.id);
+            if (roomFunctions.allPlayersReady(players, room.playerIDs)){
+                io.in(currentRoom).emit("startGame"); // Start the game if all players are ready
+                room.gamePlaying = true;
+                room.gameStarted = true;
+                console.log("start");
+            }
+        }
+    })
+
+    socket.on("unready", () => {
+        let room = rooms[findRoomIndex(rooms, currentRoom)];
+        if (!room.gamePlaying) {
+            players[socket.id].ready = false;
+            io.in(currentRoom).emit("unready", socket.id);
+        }
     })
 
 
@@ -116,6 +139,10 @@ io.on('connection', (socket) => {
         }
     });
 
+  // socket.on('dead', () => {
+  //     console.log("dead");
+  // })
+
     socket.on('disconnect', () => {
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
         delete players[socket.id];
@@ -153,19 +180,21 @@ let fireballs = {room1: [], room2: []};
 
 let updateInterval = setInterval(() => {
     rooms.forEach(room => {
-        updatedPlayers = {};
-        room.playerIDs.forEach(id => {
-            players[id].move();
-            updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
-        });
-        io.to(room.name).emit("updatePlayers", updatedPlayers);
-        
-        fireballs[room.name].forEach((fireball, index) => {
-            fireball.move();
-            fireball.collisionCheck(index, fireballs, players, room);  
-        })
-    
-        io.to(room).emit("updatePlayers", updatedPlayers);
+        if (room.gamePlaying) {
+            updatedPlayers = {};
+            room.playerIDs.forEach(id => {
+                players[id].move();
+                updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
+            });
+            io.to(room.name).emit("updatePlayers", updatedPlayers);
+            
+            fireballs[room.name].forEach((fireball, index) => {
+                fireball.move();
+                fireball.collisionCheck(index, fireballs, players, room);  
+            })
+            
+            io.to(room).emit("updatePlayers", updatedPlayers);
+        }
     });
 
 }, 15);

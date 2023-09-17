@@ -44,6 +44,7 @@
   height: 100%;
   width: 100%;
   background-color: rgba(0, 247, 255, 0.248);
+  overflow: auto;
 }
 
 #menuButtons{
@@ -110,4 +111,38 @@ tr:nth-child(odd){background-color: #0073ff50} */
 
 .lobby_table_container{
   height: 90%;
+}
+
+#readyButton {
+  position: fixed;
+  bottom: 20px;
+  right: 32px;
+}
+
+#playerList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.player-li {
+  width: 20vw;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: solid;
+  border-color: black;
+  background-color: rgba(255, 8, 0, 0.656);
+}
+
+.player-name {
+  display: inline-block;
+  margin-bottom: 0;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.player-image {
+  margin-top: 3px;
+  vertical-align: top;
+  height: 32px;
 }

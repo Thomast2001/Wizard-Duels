@@ -24,6 +24,7 @@ class Player{
         this.animationIndex = 0;
         this.frames;
         this.stunned = false;
+        this.ready = false;
     }
 
     calcSpeed(mouseX, mouseY) {

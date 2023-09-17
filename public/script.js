@@ -29,7 +29,6 @@ function drawLoops(players){
     }
 }
 
-
 let players = {};
 let fireballs = [];
 let particles = [];
@@ -37,17 +36,7 @@ let healthNumbers = [];
 let explosionsWaves = [];
 let lightnings = [];
 let onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
-
-function collisionWithPlayer(obj){
-    for (let id in players) {
-        if (fireball.playerID != id &&
-            fireball.x > players[id].x - 20 && fireball.x < players[id].x + 20 &&
-            fireball.y > players[id].y - 20 && fireball.y < players[id].y + 20) {
-                fireball.explode(); 
-                fireballs.splice(index,1);
-        }
-    }
-}
+let gamePlaying = false;
 
 function handleFireballs(){
     fireballs.forEach((fireball, index) => {
@@ -165,11 +154,32 @@ canvas.addEventListener("click", (event) => {
 })
 
 socket.on("newPlayer", (newPlayer) => {
+    addPlayerToList(newPlayer.id, newPlayer.color, newPlayer.name);
     players[newPlayer.id] = new Player(newPlayer.color, newPlayer.name)
 })
 
 socket.on("playerDisconnect", (playerId) => {
     delete players[playerId];
+})
+
+socket.on("ready", (id) => {
+    console.log(id + " ready")
+    document.getElementById(id).style.backgroundColor = "rgba(4, 255, 63, 0.7)";
+})
+
+socket.on("startGame", () => {
+    gamePlaying = true;
+    document.querySelector("#game_menu").style.display = "none"
+})
+
+socket.on("endGame", () => {
+    gamePlaying = false;
+    document.querySelector("#game_menu").style.display = "block"
+})
+
+socket.on("unready", (id) => {
+    console.log(id + " not ready")
+    document.getElementById(id).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
 })
 
 socket.on("updatePlayers", (updatedPlayers) => {
@@ -237,7 +247,7 @@ function animate(){
         handleExplosionWaves();
         handleHealthNumbers();
         handleLightnings();
-        requestAnimationFrame(animate);
     }
+    requestAnimationFrame(animate);
 }
 document.onload = animate();
