@@ -2,6 +2,7 @@ const Player = require('./serverClasses/player');
 const A = require('./serverClasses/abilities');
 const validate = require('./validate.js');
 const roomFunctions = require('./roomFunctions.js');
+const gameFunctions = require('./gameFunctions.js');
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -32,16 +33,15 @@ io.on('connection', (socket) => {
         // Player is not in a game yet //
         /////////////////////////////////
 
-    socket.on("joinRoom", msg => {
-        if (currentRoom == null) { // if player is not already in a room
-            let roomJoined = msg.room
-            let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
-
+    socket.on("joinRoom", joined => {
+        let roomJoined = joined.room
+        let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
+        if (currentRoom == null && !rooms[roomIndex].gameStarted) { // if player is not already in a room
             rooms[roomIndex].playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
 
-            players[socket.id].name = msg.playerName;
+            players[socket.id].name = joined.playerName;
             rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
                 socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name}); 
             })
@@ -53,10 +53,12 @@ io.on('connection', (socket) => {
     socket.on("createRoom", room => {
         if (!validate.LobbyData(room.roomName, room.password)){ // Validate the room data
             socket.emit('error', 'Invalid lobby data');
+            return;
         }
 
         if (!validate.PlayerName(room.playerName)){  // Validate the player name
             socket.emit('error', 'Player name does not meet the requirements');
+            return;
         }
 
         players[socket.id].name = room.playerName;
@@ -74,9 +76,10 @@ io.on('connection', (socket) => {
             players[socket.id].ready = true;
             io.in(currentRoom).emit("ready", socket.id);
             if (roomFunctions.allPlayersReady(players, room.playerIDs)){
-                io.in(currentRoom).emit("startGame"); // Start the game if all players are ready
+                gameFunctions.resetPlayers(io, currentRoom, players, room.playerIDs)
                 room.gamePlaying = true;
                 room.gameStarted = true;
+                io.in(currentRoom).emit("startGame"); // Start the game if all players are ready
             }
         }
     })
@@ -102,39 +105,43 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fireball', targetPos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['fireball']) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned 
+                        && !players[socket.id].onCooldown['fireball']) {
             fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
             socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                             'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
-            players[socket.id].cooldown('fireball', 2000);
+            players[socket.id].cooldown('fireball', 950);
         }
     })
     
     socket.on('airwave', () => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['airwave']) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned 
+                        && !players[socket.id].onCooldown['airwave']) {
             io.to(currentRoom).emit('airwave', socket.id);
             A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, fireballs);
-            players[socket.id].cooldown('airwave', 1000);
+            players[socket.id].cooldown('airwave', 9950);
         }
     }) 
 
     socket.on('teleport', pos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['teleport']) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned 
+                        && !players[socket.id].onCooldown['teleport']) {
             players[socket.id].calcSpeed(pos.x, pos.y);
             A.teleport(players[socket.id], pos);
             socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
-            players[socket.id].cooldown('teleport', 100);
+            players[socket.id].cooldown('teleport', 7450);
         }
     })
 
     socket.on('lightning', (lightning) => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned && !players[socket.id].onCooldown['lightning']) {
+        if (players[socket.id].health > 0 && !players[socket.id].stunned 
+                        && !players[socket.id].onCooldown['lightning']) {
             if (lightning.playerHit) {
                 players[lightning.playerHit].health -= 1;
-                players[lightning.playerHit].stun(5000, players, lightning.playerHit); // Stun the player hit
+                players[lightning.playerHit].stun(1500, players, lightning.playerHit); // Stun the player hit
             } 
             socket.to(currentRoom).emit('lightning', lightning)
-            players[socket.id].cooldown('lightning', 5000);
+            players[socket.id].cooldown('lightning', 14950);
         }
     });
 
@@ -146,18 +153,18 @@ io.on('connection', (socket) => {
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
         delete players[socket.id];
 
-        let roomIndex = findRoomIndex(rooms, currentRoom);
         if (currentRoom != null){
+            let roomIndex = findRoomIndex(rooms, currentRoom);
             let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
             rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
-            console.log(rooms[roomIndex].playerIDs);
+            roomFunctions.unreadyAllPlayers(io, rooms[roomIndex], players);
+
+            if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
+                rooms.splice(roomIndex, 1);
+                delete fireballs[currentRoom];
+            }
         }
-        roomFunctions.unreadyAllPlayers(io, room, players);
         
-        //if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
-        //    rooms.splice(roomIndex, 1);
-        //    delete fireballs[currentRoom];
-        //}
 
     });
   });
@@ -201,6 +208,18 @@ let updateInterval = setInterval(() => {
     });
 
 }, 15);
+
+let lavaDamageInterval = setInterval(() => {
+    rooms.forEach(room => {
+        if (room.gamePlaying) {
+            room.playerIDs.forEach(id => {
+                if (gameFunctions.checkPlayerOutsideArena(players[id])){
+                    players[id].health--;
+                }
+            });
+        }
+    });
+}, 100);
 
 app.get('/rooms', (req, res) => { 
     res.json(rooms);

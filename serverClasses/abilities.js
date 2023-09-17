@@ -21,7 +21,7 @@ class Fireball{
         for (let i = 0; i < IDs.length; i++) {
             if (this.playerID != IDs[i] && players[IDs[i]].health > 0 &&
                 this.x > players[IDs[i]].x - 20 && this.x < players[IDs[i]].x + 20 &&
-                this.y > players[IDs[i]].y - 20 && this.y < players[IDs[i]].y + 20) {
+                this.y > players[IDs[i]].y - 22 && this.y < players[IDs[i]].y + 22) {
                     players[IDs[i]].knockback(this.speed.x * 2, this.speed.y * 2);
                     players[IDs[i]].health -= this.damage;
                     fireballs[room.name].splice(index, 1);

@@ -68,13 +68,6 @@ class Player{
         } 
     }
 
-    takeDamage(damage) {
-        this.health -= damage;
-        if (this.health <= 0) {
-            return true;
-        }
-    }
-
     stun(msStunned, players, id) {
         this.stunned = true;
         this.speedX = 0;

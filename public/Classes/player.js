@@ -139,7 +139,7 @@ class Player{
             ctx.fillText(this.name, this.x - this.nameWidth/2, this.y - 35)
             
             // Health
-            ctx.font = "12px serif";
+            ctx.font = "12px PressStart2P";
             ctx.strokeStyle = "grey";
             ctx.fillStyle = "rgba(0,255,0,100)";
             ctx.fillRect(this.x-25, this.y-26, this.health / 100 * 48, 3)

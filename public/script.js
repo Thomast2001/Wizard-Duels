@@ -2,7 +2,7 @@ const canvas = document.getElementById("game_canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = 1800;
 canvas.height = 900;
-ctx.font = "12px serif";
+ctx.font = "12px PressStart2P";
 let socket = io();
 console.log(window.location.href);
 background = new Image();
@@ -98,13 +98,13 @@ canvas.addEventListener("keydown", (event) => {
                     fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
-                    cooldown(onCooldown, "fireball", 100);
+                    cooldown(onCooldown, "fireball", 1000);
                 }
                 break;
             case "w":
                 if (!onCooldown.airwave) {
                     socket.emit("airwave");
-                    cooldown(onCooldown, "airwave", 100);
+                    cooldown(onCooldown, "airwave", 10000);
                 }
                 break;
             case "e":
@@ -113,7 +113,7 @@ canvas.addEventListener("keydown", (event) => {
                     players[socket.id].calcSpeed(mouse.x, mouse.y);
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     teleport(players[socket.id], mouse);
-                    cooldown(onCooldown, "teleport", 100);
+                    cooldown(onCooldown, "teleport", 7500);
                 }
                 break;
             case "r":
@@ -122,11 +122,11 @@ canvas.addEventListener("keydown", (event) => {
                     let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
                     if (playerHit) {
                         socket.emit("lightning", { playerHit: playerHit })
-                        players[playerHit].stun(5000, players, playerHit); // Stun the player hit
+                        players[playerHit].stun(1500, players, playerHit); // Stun the player hit
                     } else {
                         socket.emit("lightning", { x: mouse.x, y: mouse.y })
                     }
-                    cooldown(onCooldown, "lightning", 100);
+                    cooldown(onCooldown, "lightning", 15000);
                 }
                 break;
             case "d":
@@ -159,29 +159,45 @@ socket.on("newPlayer", (newPlayer) => {
 })
 
 socket.on("playerDisconnect", (playerId) => {
+    document.getElementById(playerId).remove();
     delete players[playerId];
 })
 
 socket.on("ready", (id) => {
-    console.log(id + " ready")
     document.getElementById(id).style.backgroundColor = "rgba(4, 255, 63, 0.7)";
 })
 
+socket.on("unready", (id) => {
+    document.getElementById(id).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
+})
+
+socket.on("unreadyAll", (id) => {
+    for (let playerID in players) {
+        document.getElementById(playerID).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
+    }
+    readyButton.classList.remove("is-error");
+    readyButton.textContent = "Ready up!";
+})
+
 socket.on("startGame", () => {
+    for (let playerID in players) {
+        players[playerID].dead = false;
+        if (animationIndexes[players[playerID].animationIndex] == "death"){
+            players[playerID].changeAnimationState("idle");
+        }
+    }
     gamePlaying = true;
     document.querySelector("#game_menu").style.display = "none"
 })
 
 socket.on("endGame", () => {
+    for (let playerID in players) {
+        players[playerID].dead = false;
+    }
     setTimeout(() => {
         gamePlaying = false;
         document.querySelector("#game_menu").style.display = "block"
     }, 2000);
-})
-
-socket.on("unready", (id) => {
-    console.log(id + " not ready")
-    document.getElementById(id).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
 })
 
 socket.on("updatePlayers", (updatedPlayers) => {
@@ -222,7 +238,7 @@ socket.on('airwave', (id) => {
 socket.on('lightning', (lightning) => {
     if (lightning.playerHit) {
         createLightning(lightnings, players[lightning.playerHit].x, players[lightning.playerHit].y);
-        players[lightning.playerHit].stun(5000, players, lightning.playerHit); // Stun the player hit
+        players[lightning.playerHit].stun(1500, players, lightning.playerHit); // Stun the player hit
     } else {
         createLightning(lightnings, lightning.x, lightning.y);
     }
@@ -243,7 +259,7 @@ setInterval(() => {
 
 function animate(){
     ctx.drawImage(background, 0, 0);
-    if (gamePlaying == true) {
+    if (gamePlaying == true) { //gamePlaying == true
         drawLoops(players);
         handleParticles();
         handleExplosionWaves();
