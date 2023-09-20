@@ -90,9 +90,10 @@ function handleLightnings(){
 }
 
 canvas.addEventListener("keydown", (event) => {
+    event.preventDefault();
     if (players[socket.id].health > 0 && !players[socket.id].stunned) {
-        switch (event.key) {
-            case "q":
+        switch (event.code) {
+            case "KeyQ":
                 if (!onCooldown.fireball) {
                     socket.emit('fireball', mouse);
                     fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
@@ -101,13 +102,13 @@ canvas.addEventListener("keydown", (event) => {
                     cooldown(onCooldown, "fireball", 1000);
                 }
                 break;
-            case "w":
+            case "KeyW":
                 if (!onCooldown.airwave) {
                     socket.emit("airwave");
                     cooldown(onCooldown, "airwave", 10000);
                 }
                 break;
-            case "e":
+            case "KeyE":
                 if (!onCooldown.teleport) {
                     socket.emit('teleport', mouse);
                     players[socket.id].calcSpeed(mouse.x, mouse.y);
@@ -116,7 +117,7 @@ canvas.addEventListener("keydown", (event) => {
                     cooldown(onCooldown, "teleport", 7500);
                 }
                 break;
-            case "r":
+            case "KeyR":
                 if (!onCooldown.lightning) {
                     let lightning = createLightning(lightnings, mouse.x, mouse.y);
                     let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
