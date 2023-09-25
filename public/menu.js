@@ -70,7 +70,9 @@ document.querySelector('#chooseNameButton').addEventListener('click', () => {
   openMenu("mainMenu");
 })
 
-
+document.querySelector('#colorButton').addEventListener('click', () => {
+  socket.emit("color");
+})
 
 
 createLobbyForm.addEventListener('submit', (e) => { // Creating a lobby

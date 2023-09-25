@@ -13,6 +13,8 @@ const io = new Server(server);
 
 const port = 3000
 
+const colors = ['red', 'green', 'blue', 'purple', 'white'];
+
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
@@ -26,7 +28,7 @@ server.listen(port, () => {
 
 io.on('connection', (socket) => {
     console.log("user con")
-    players[socket.id] = new Player(`hsl(${Math.random()*360},100%, 50%)`, `player${Math.floor(Math.random()*10)}`);
+    players[socket.id] = new Player('red', `player${Math.floor(Math.random()*10)}`);
     let currentRoom = null;
 
         /////////////////////////////////
@@ -40,6 +42,7 @@ io.on('connection', (socket) => {
             rooms[roomIndex].playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
+            //players[socket.id].color = room.freeColors.shift();
 
             players[socket.id].name = joined.playerName;
             rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
@@ -62,12 +65,13 @@ io.on('connection', (socket) => {
         }
 
         players[socket.id].name = room.playerName;
-        rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, gamePlaying: false, password: room.password }); // Create the room
-        fireballs[room.roomName] = [] // Create array for fireballs
+        rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, gamePlaying: false, 
+                password: room.password, freeColors: ['green', 'green', 'blue', 'purple', 'white'] }); // Create the room
+        fireballs[room.roomName] = []; // Create array for fireballs
 
         socket.join(room.roomName); // Player joins the new room/lobby
         currentRoom = room.roomName;
-        socket.emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name}); 
+        socket.emit("newPlayer", { 'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name }); 
     })
 
     socket.on("ready", () => {
@@ -92,6 +96,16 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("color", () => {
+        const room = rooms[findRoomIndex(rooms, currentRoom)];
+        if (!room.gameStarted) {
+            room.freeColors.push(players[socket.id].color);
+            const newColor = room.freeColors.shift();
+            players[socket.id].color = newColor;
+            io.in(currentRoom).emit("color", {playerID: socket.id, color: newColor})
+            console.log(newColor);
+        }
+    })
 
         /////////////////////////////////
         // Player is in a started game //

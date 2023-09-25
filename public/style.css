@@ -159,6 +159,7 @@ tr:nth-child(odd){background-color: #0073ff50} */
   position: fixed;
   bottom: 20px;
   right: 32px;
+  margin: 0;
 }
 
 #playerList {

@@ -26,4 +26,4 @@ function unreadyAllPlayers(io, room, players) {
     io.in(room.name).emit("unreadyAll");
 }
 
-module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers}
+module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers }
