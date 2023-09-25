@@ -139,13 +139,20 @@ function addPlayerToList(playerID, color, name) {
     playerName.classList.add("player-name");
     playerImage.classList.add("player-image");
 
-    playerImage.src = "playerimg.png";
+    playerImage.src = "playerIcons/" + color + "PlayerImg.png";
     playerName.textContent = name
 
     player.appendChild(playerName);
     player.appendChild(playerImage);
 
     playerList.appendChild(player);
+}
+
+function changePlayerImg(id, color){
+  console.log()
+  player = document.getElementById(id);
+  playerIcon = player.querySelector('img');
+  playerIcon.src = "playerIcons/" + color + "PlayerImg.png";
 }
 
 refreshLobbies()

@@ -13,7 +13,7 @@ const io = new Server(server);
 
 const port = 3000
 
-const colors = ['red', 'green', 'blue', 'purple', 'white'];
+const colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple'];
 
 app.use(express.static('public'))
 
@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
             rooms[roomIndex].playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
-            //players[socket.id].color = room.freeColors.shift();
+            players[socket.id].color = rooms[roomIndex].freeColors.shift();
 
             players[socket.id].name = joined.playerName;
             rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
@@ -66,11 +66,14 @@ io.on('connection', (socket) => {
 
         players[socket.id].name = room.playerName;
         rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, gamePlaying: false, 
-                password: room.password, freeColors: ['green', 'green', 'blue', 'purple', 'white'] }); // Create the room
-        fireballs[room.roomName] = []; // Create array for fireballs
-
+            password: room.password, freeColors: colors.slice() }); // Create the room
+            fireballs[room.roomName] = []; // Create array for fireballs
+            
         socket.join(room.roomName); // Player joins the new room/lobby
         currentRoom = room.roomName;
+        
+        const createdRoom = rooms[findRoomIndex(rooms, currentRoom)];
+        players[socket.id].color = createdRoom.freeColors.shift();
         socket.emit("newPlayer", { 'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name }); 
     })
 
@@ -98,9 +101,11 @@ io.on('connection', (socket) => {
 
     socket.on("color", () => {
         const room = rooms[findRoomIndex(rooms, currentRoom)];
-        if (!room.gameStarted) {
+        if (!room.gamePlaying) {
+            console.log(room.freeColors);
             room.freeColors.push(players[socket.id].color);
             const newColor = room.freeColors.shift();
+            console.log(room.freeColors);
             players[socket.id].color = newColor;
             io.in(currentRoom).emit("color", {playerID: socket.id, color: newColor})
             console.log(newColor);

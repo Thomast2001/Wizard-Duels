@@ -1,5 +1,12 @@
-spriteSheet = new Image();
-spriteSheet.src = window.location.href + "AnimationSheet_Character.png";
+colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple'];
+let spriteSheets = {}
+
+colors.forEach(color => {
+    spriteSheets[color] = new Image();
+    spriteSheets[color].src = `${window.location.href}spriteSheets/${color}SpriteSheet.PNG`;
+});
+
+
 const spriteSize = 32;
 
 class Player{
@@ -132,7 +139,7 @@ class Player{
             if (this.animationFrame > animationStates[this.animationIndex].frames){
                 this.animationFrame = 0;
             }
-            ctx.drawImage(spriteSheet, this.frameX, this.frameY, spriteSize, spriteSize, this.x-spriteSize, this.y-spriteSize, spriteSize*2, spriteSize*2);
+            ctx.drawImage(spriteSheets[this.color], this.frameX, this.frameY, spriteSize, spriteSize, this.x-spriteSize, this.y-spriteSize, spriteSize*2, spriteSize*2);
             //console.log(this.animationFrame)
             // Name
             ctx.fillStyle = "grey";

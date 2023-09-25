@@ -172,6 +172,12 @@ socket.on("unready", (id) => {
     document.getElementById(id).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
 })
 
+socket.on("color", (msg) => {
+    changePlayerImg(msg.playerID, msg.color);
+    players[msg.playerID].color = msg.color;
+    console.log(players[msg.playerID].color);
+})
+
 socket.on("unreadyAll", (id) => {
     for (let playerID in players) {
         document.getElementById(playerID).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
