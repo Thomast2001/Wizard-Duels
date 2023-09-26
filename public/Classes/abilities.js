@@ -23,6 +23,7 @@ class Fireball{
             if (this.playerID != id && players[id].health > 0 &&
                 this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
                 this.y > players[id].y - 20 && this.y < players[id].y + 20) {
+                    playSound(explosionSounds);
                     this.explode(); 
                     fireballs.splice(index,1);
             }
@@ -50,6 +51,7 @@ function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
 }
 
 function teleport(player, pos){
+    playSound(teleportSounds);
     let teleportPos = {'x': pos.x, 'y': pos.y}
     let maxTeleportDist = 200;
     let xDiff = teleportPos.x - player.x;
@@ -81,6 +83,7 @@ class Lightning {
     }
 
     generateLightning(){
+        playSound(lightningSounds);
         while(this.y >= 0) {
             this.x = this.x + Math.round(Math.random() * 70) - 35;
             this.y = this.y - 50;

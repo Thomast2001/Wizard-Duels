@@ -7,7 +7,6 @@ let socket = io();
 console.log(window.location.href);
 background = new Image();
 background.src = window.location.href + "Arena.png";
-let effect;
 
 let mouse = {
     "x": undefined,
@@ -96,6 +95,7 @@ canvas.addEventListener("keydown", (event) => {
             case "KeyQ":
                 if (!onCooldown.fireball) {
                     socket.emit('fireball', mouse);
+                    playSound(attackSounds);
                     fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
@@ -228,6 +228,7 @@ socket.on("move", (playerMove) => {
 })
 
 socket.on("fireball", (fb) => {
+    playSound(attackSounds);
     fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID));
     players[fb.playerID].changeOrientation(fb.targetPosX - players[fb.playerID].x);
     players[fb.playerID].changeAnimationState("attack");
@@ -239,6 +240,7 @@ socket.on('teleport', (tp) => {
 });
 
 socket.on('airwave', (id) => {
+    playSound(airwaveSounds);
     explosionsWaves.push(new ExplosionWave(players[id].x, players[id].y, 19, "255,255,255"));   
 })
 

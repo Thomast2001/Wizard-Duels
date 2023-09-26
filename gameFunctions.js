@@ -21,6 +21,8 @@ function resetPlayers(io, room, players, playerIDs) {
         players[id].health = 100;
         players[id].speedX = 0;
         players[id].speedY = 0;
+        players[id].knockbackX = 0;
+        players[id].knockbackY = 0;
     });
     io.to(room.name).emit("updatePlayers", updatedPlayers);
 }
