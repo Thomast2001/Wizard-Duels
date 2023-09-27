@@ -152,6 +152,7 @@ tr:nth-child(odd){background-color: #0073ff50} */
 }
 
 .lobby_table_container{
+  margin-top: 10px;
   height: 90%;
 }
 
@@ -188,4 +189,20 @@ tr:nth-child(odd){background-color: #0073ff50} */
   margin-top: 3px;
   vertical-align: top;
   height: 32px;
+}
+
+.close-button {
+  display: block !important;
+  position: absolute !important;
+  right: 23px;
+  top: 6px;
+  margin: 0 !important;
+}
+
+#disconnectButton {
+  display: none;
+  z-index: 1;
+  position: absolute;
+  top: 90%;
+  left: 2%;
 }

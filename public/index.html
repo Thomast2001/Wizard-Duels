@@ -14,7 +14,7 @@
 <canvas tabindex='0' id="game_canvas"></canvas>
 
 <div id="game_menu">
-
+    
     <div id="chooseName" class="main_menu">
         <input id="nameInput" placeholder="Enter Name" class="nes-input">
         <button id="chooseNameButton" class="nes-btn is-success menuButtons">Continue</button>
@@ -24,40 +24,42 @@
         <button id="playButton" class="nes-btn is-success menuButtons">Play</button>
         <button class="nes-btn menuButtons">Options</button>
     </div>
-
+    
     <div id="lobby_browser" class="window">
         <div id="lobby_table_container" class="nes-container">
             <div id="table_wrapper">
                 <table>
                     <thead>
-                    <tr>
-                        <th class="Lobby-name">Looby Name</th>
-                        <th>Players</th>
-                        <th>Joinable</th>
-                        <th>Password</th>
-                    </tr>
+                        <tr>
+                            <th class="Lobby-name">Looby Name</th>
+                            <th>Players</th>
+                            <th>Joinable</th>
+                            <th>Password</th>
+                        </tr>
                     </thead>
                     <tbody id="lobby_table">
                         
-                    <tbody>
+                    </tbody>
                 </table>
             </div>
             <button id="refreshButton" class="browser-button nes-btn">Refresh</button>
         </div>
-
-
-            <form id="createLobbyForm" class="nes-container">
-                <label for="roomName">Room Name:</label>
-                <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" class="nes-input" required>
                 
-                <label for="password">Password:</label>
-                <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="20">
                 
-                <button type="submit" class="browser-button nes-btn">Create Lobby</button>
-            </form>
+        <form id="createLobbyForm" class="nes-container">
+            <label for="roomName">Room Name:</label>
+            <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" class="nes-input" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="20">
+            
+            <button type="submit" class="browser-button nes-btn">Create Lobby</button>
+        </form>
 
+        <i id="closeLobbybrowser" class="nes-icon close nes-pointer close-button"></i>
+        
     </div>
-
+    
     <div id="waitingRoom" class="window nes-container">
         
         <ul id="playerList">
@@ -65,8 +67,10 @@
         <button id="readyButton" class="browser-button nes-btn is-success">Ready up!</button>
         <button id="colorButton" class="browser-button nes-btn">Color</button>
     </div>
+
 </div>
 
+<button id="disconnectButton" class="nes-btn is-error">Disconnect</button>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="Classes/player.js"></script>

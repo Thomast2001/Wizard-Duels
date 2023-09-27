@@ -112,6 +112,12 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("leaveLobby", () => {
+        if (currentRoom != null) {
+            console.log("leaveLobby")
+        }
+    })
+
         /////////////////////////////////
         // Player is in a started game //
         /////////////////////////////////
@@ -169,6 +175,7 @@ io.on('connection', (socket) => {
   // })
 
     socket.on('disconnect', () => {
+        console.log(socket.id)
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
         delete players[socket.id];
 
