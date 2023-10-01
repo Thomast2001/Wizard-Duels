@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
     socket.on("joinRoom", joined => {
         let roomJoined = joined.room
         let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
-        if (currentRoom == null && !rooms[roomIndex].gameStarted) { // if player is not already in a room
+        if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex].gameStarted) { // Check if room exists and player is not already in room 
             rooms[roomIndex].playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on("createRoom", room => {
-        if (!validate.LobbyData(room.roomName, room.password)){ // Validate the room data
+        if (!validate.LobbyData(rooms, room.roomName, room.password)){ // Validate the room data
             socket.emit('error', 'Invalid lobby data');
             return;
         }
@@ -114,7 +114,10 @@ io.on('connection', (socket) => {
 
     socket.on("leaveLobby", () => {
         if (currentRoom != null) {
-            console.log("leaveLobby")
+            let roomIndex = findRoomIndex(rooms, currentRoom);
+            roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
+            socket.to(currentRoom).emit("playerDisconnect", socket.id);
+            currentRoom = null;
         }
     })
 
@@ -181,14 +184,16 @@ io.on('connection', (socket) => {
 
         if (currentRoom != null){
             let roomIndex = findRoomIndex(rooms, currentRoom);
-            let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
-            rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
-            roomFunctions.unreadyAllPlayers(io, rooms[roomIndex], players);
-
-            if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
-                rooms.splice(roomIndex, 1);
-                delete fireballs[currentRoom];
-            }
+            roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
+           // let roomIndex = findRoomIndex(rooms, currentRoom);
+           // let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
+           // rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
+           // roomFunctions.unreadyAllPlayers(io, rooms[roomIndex], players);
+//
+           // if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
+           //     rooms.splice(roomIndex, 1);
+           //     delete fireballs[currentRoom];
+           // }
         }
         
 

@@ -61,18 +61,28 @@
     </div>
     
     <div id="waitingRoom" class="window nes-container">
+        <i id="leaveCloseButton" class="nes-icon close nes-pointer close-button"></i>
         
         <ul id="playerList">
         </ul>   
         <button id="readyButton" class="browser-button nes-btn is-success">Ready up!</button>
         <button id="colorButton" class="browser-button nes-btn">Color</button>
     </div>
+    
+    <div id="leaveGameDiv" class="nes-container">
+        <button id="disconnectCancelButton" class="nes-btn">Cancel</button>
+        <button id="disconnectButton" class="nes-btn is-error">Disconnect</button>
+    </div>
 
+    
 </div>
 
-<button id="disconnectButton" class="nes-btn is-error">Disconnect</button>
+<div id="errorPopup" class="nes-container">
+    <p>Error: Lobby name already exists</p>
+    <button id="closePopup" class="nes-btn is-error">Close</button>
+</div>
 
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="Classes/player.js"></script>
     <script src="Classes/abilities.js"></script>
     <script src="Classes/particle.js"></script>

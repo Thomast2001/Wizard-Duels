@@ -90,7 +90,7 @@ function handleLightnings(){
 
 canvas.addEventListener("keydown", (event) => {
     event.preventDefault();
-    if (players[socket.id].health > 0 && !players[socket.id].stunned) {
+    if (players[socket.id].health > 0 && !players[socket.id].stunned && gamePlaying) {
         switch (event.code) {
             case "KeyQ":
                 if (!onCooldown.fireball) {

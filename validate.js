@@ -1,9 +1,15 @@
-function LobbyData(roomName, password) {
+function LobbyData(rooms, roomName, password) {
     if (typeof roomName !== 'string' || roomName.length < 3 || roomName.length > 50) {
         return false;
     }
     if (typeof password !== 'string' || password.length > 20) {
         return false;
+    }
+
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].name == roomName) {
+            return false;
+        }
     }
     return true;
 }

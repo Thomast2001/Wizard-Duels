@@ -26,4 +26,16 @@ function unreadyAllPlayers(io, room, players) {
     io.in(room.name).emit("unreadyAll");
 }
 
-module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers }
+function playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, playerID, fireballs) {
+    let playerIndex = rooms[roomIndex].playerIDs.indexOf(playerID); 
+    rooms[roomIndex].playerIDs.splice(playerIndex, 1); // Remove playerID from the room
+
+    if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
+        rooms.splice(roomIndex, 1);
+        delete fireballs[currentRoom];
+    } else if (!currentRoom.gamePlaying) {
+        unreadyAllPlayers(io, rooms[roomIndex], players);
+    }
+}
+
+module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby }

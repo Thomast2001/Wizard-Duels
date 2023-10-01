@@ -7,6 +7,7 @@ const waitingRoom = document.querySelector("#waitingRoom");
 const playerList = document.querySelector("#playerList")
 const readyButton = document.querySelector("#readyButton");
 const disconnectButton = document.querySelector("#disconnectButton");
+const leaveGameDiv = document.querySelector("#leaveGameDiv")
 
 readyButton.addEventListener("click", () => {
   if(players[socket.id].ready){
@@ -24,7 +25,6 @@ readyButton.addEventListener("click", () => {
 
 document.querySelector("#refreshButton").addEventListener("click", refreshLobbies);
 
-document.querySelector("#closeLobbybrowser").addEventListener("click", () => { openMenu("mainMenu") })
 
 document.body.addEventListener('keydown', event => {
   if (event.key == "Escape") {
@@ -42,8 +42,8 @@ function openMenu(menu){
   lobbyBrowser.style.display = 'none';
   chooseName.style.display = 'none';
   waitingRoom.style.display = 'none';
+  leaveGameDiv.style.display = 'none';
   console.log(disconnectButton)
-  disconnectButton.style.display = 'none';
   // options.style.display = 'none';
 
   switch (menu) {
@@ -58,7 +58,6 @@ function openMenu(menu){
       break;
     case "waitingRoom":
       waitingRoom.style.display = 'flex';
-      disconnectButton.style.display = 'block';
       break;
     default:
       break;
@@ -160,8 +159,23 @@ function changePlayerImg(id, color){
   playerIcon.src = "playerIcons/" + color + "PlayerImg.png";
 }
 
+
+document.querySelector("#closeLobbybrowser").addEventListener("click", () => { openMenu("mainMenu") })
+
+document.querySelector("#leaveCloseButton").addEventListener("click", () => {
+  leaveGameDiv.style.display = "flex";
+});
+
+document.querySelector("#disconnectCancelButton").addEventListener("click", () => {
+  leaveGameDiv.style.display = "none";
+});
+
 disconnectButton.addEventListener("click", () => {
   socket.emit('leaveLobby');
+  gamePlaying = false;
+  players = {};
+  playerList.innerHTML = "" // Clear the list of players in the waiting room
+  openMenu('lobbyBrowser')
 });
 
 refreshLobbies()
