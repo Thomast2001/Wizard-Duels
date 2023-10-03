@@ -50,17 +50,19 @@ io.on('connection', (socket) => {
             })
 
             socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
+        } else {
+            socket.emit('error', 'Game already started or does not exist');
         }
     })
 
     socket.on("createRoom", room => {
         if (!validate.LobbyData(rooms, room.roomName, room.password)){ // Validate the room data
-            socket.emit('error', 'Invalid lobby data');
+            socket.emit('error', 'Error: Lobby name already exists');
             return;
         }
 
         if (!validate.PlayerName(room.playerName)){  // Validate the player name
-            socket.emit('error', 'Player name does not meet the requirements');
+            socket.emit('error', 'Error: Player name does not meet the requirements');
             return;
         }
 

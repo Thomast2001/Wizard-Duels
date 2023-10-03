@@ -73,7 +73,9 @@ class Player{
         this.speedX = 0;
         this.speedY = 0;
         setTimeout(() => {
-            players[id].stunned = false; 
+            if (players[id]) { // Check if player is still connected to the server
+                players[id].stunned = false; 
+            }
         }, msStunned);
     }
 

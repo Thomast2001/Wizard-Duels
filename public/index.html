@@ -15,14 +15,27 @@
 
 <div id="game_menu">
     
-    <div id="chooseName" class="main_menu">
-        <input id="nameInput" placeholder="Enter Name" class="nes-input">
-        <button id="chooseNameButton" class="nes-btn is-success menuButtons">Continue</button>
-    </div>
+    <form id="chooseName" class="main_menu">
+        <input type="text" id="nameInput" placeholder="Enter Name" class="nes-input" minlength="3" max="13" required>
+        <button type="submit" id="chooseNameButton" class="nes-btn is-success menuButtons">Continue</button>
+    </form>
     
     <div id="main_menu" class="main_menu">
         <button id="playButton" class="nes-btn is-success menuButtons">Play</button>
-        <button class="nes-btn menuButtons">Options</button>
+        <button id="optionsButton" class="nes-btn menuButtons">Options</button>
+    </div>
+
+    <div id="options" class="window nes-container">
+        <i id="closeOptions" class="nes-icon close nes-pointer close-button"></i>
+
+        <label for="volume">Volume:</label>
+        <input id="volume" class="slider" type="range" min="0" max="100" value="50">
+
+        <label for="music">Music:</label>
+        <input id="music" class="slider" type="range" min="0" max="100" value="50">
+
+        <button id="changeName" class="nes-btn menuButtons is-primary">Change name</button>
+        
     </div>
     
     <div id="lobby_browser" class="window">
@@ -69,7 +82,7 @@
         <button id="colorButton" class="browser-button nes-btn">Color</button>
     </div>
     
-    <div id="leaveGameDiv" class="nes-container">
+    <div id="leaveGameDiv" class="nes-container popup">
         <button id="disconnectCancelButton" class="nes-btn">Cancel</button>
         <button id="disconnectButton" class="nes-btn is-error">Disconnect</button>
     </div>
@@ -77,8 +90,8 @@
     
 </div>
 
-<div id="errorPopup" class="nes-container">
-    <p>Error: Lobby name already exists</p>
+<div id="errorPopup" class="popup nes-container">
+    <p id="errorMessage">Error: Lobby name already exists</p>
     <button id="closePopup" class="nes-btn is-error">Close</button>
 </div>
 

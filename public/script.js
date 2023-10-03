@@ -186,6 +186,8 @@ socket.on("unreadyAll", (id) => {
     readyButton.textContent = "Ready up!";
 })
 
+socket.on("error", (errorMessage) => errorPopup(errorMessage));
+
 socket.on("startGame", () => {
     for (let playerID in players) {
         players[playerID].dead = false;

@@ -212,26 +212,70 @@ td {
   margin: 0;
 }
 
+.popup{
+  position: absolute !important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4; 
+}
+
 #leaveGameDiv {
   display: none;
   justify-content: space-between;
   gap: 20px;
   background-color: rgba(255, 0, 0, 0.409);
-  z-index: 3; 
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 #errorPopup {
-  display: block;
+  display: none;
   background-color: rgba(255, 0, 0, 0.409);
   text-align: center;
   width: auto;
-  z-index: 4; 
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+}
+
+input[type="range"] { 
+  margin-bottom: 15px;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 30px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 0; /* iOS */
+}
+
+::-webkit-slider-runnable-track {
+  background: #ddd;
+}
+
+::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; /* 1 */
+  height: 30px;
+  background: #fff;
+  box-shadow: -200px 0 0 200px dodgerblue; /* 2 */
+  border: 2px solid #999; /* 1 */
+}
+
+::-moz-range-track {
+  height: 30px;
+  background: #ddd;
+}
+
+::-moz-range-thumb {
+  background: #fff;
+  height: 30px;
+  width: 20px;
+  border: 3px solid #999;
+  border-radius: 0 !important;
+  box-shadow: -200px 0 0 200px dodgerblue;
+  box-sizing: border-box;
+}
+
+::-ms-track { 
+  background: #ddd;
+  color: transparent;
+  height: 40px;
+  border: none;
 }

@@ -8,6 +8,8 @@ const playerList = document.querySelector("#playerList")
 const readyButton = document.querySelector("#readyButton");
 const disconnectButton = document.querySelector("#disconnectButton");
 const leaveGameDiv = document.querySelector("#leaveGameDiv")
+const errorPopupDiv = document.querySelector("#errorPopup");
+const options = document.querySelector("#options")
 
 readyButton.addEventListener("click", () => {
   if(players[socket.id].ready){
@@ -43,8 +45,8 @@ function openMenu(menu){
   chooseName.style.display = 'none';
   waitingRoom.style.display = 'none';
   leaveGameDiv.style.display = 'none';
-  console.log(disconnectButton)
-  // options.style.display = 'none';
+  errorPopupDiv.style.display = 'none';
+  options.style.display = 'none';
 
   switch (menu) {
     case "mainMenu":
@@ -59,25 +61,36 @@ function openMenu(menu){
     case "waitingRoom":
       waitingRoom.style.display = 'flex';
       break;
+    case "errorPopup":
+      errorPopupDiv.style.display = 'block';
+      break;
+    case "options":
+      options.style.display = 'block';
+      break;
     default:
       break;
+    }
   }
-}
-
+  
+  
+document.querySelector('#chooseName').addEventListener('submit', (e) => {
+  e.preventDefault(); 
+  console.log(e)
+  playerName = document.querySelector('#nameInput').value;
+  openMenu("mainMenu");
+})
 
 document.querySelector('#playButton').addEventListener('click', () => {
   openMenu("lobbyBrowser");
 })
 
-document.querySelector('#chooseNameButton').addEventListener('click', () => {
-  playerName = document.querySelector('#nameInput').value;
-  openMenu("mainMenu");
+document.querySelector('#optionsButton').addEventListener('click', () => {
+  openMenu("options");
 })
 
 document.querySelector('#colorButton').addEventListener('click', () => {
   socket.emit("color");
 })
-
 
 createLobbyForm.addEventListener('submit', (e) => { // Creating a lobby
   e.preventDefault(); 
@@ -111,7 +124,7 @@ function refreshLobbies() {
 
           nameCell.textContent = room.name;
           players.textContent = `${room.playerIDs.length}/4`;
-          joinableCell.textContent = !room.gameStarted;
+          joinableCell.textContent = room.gameStarted ? "No":"Yes";
           password.textContent = "No";
 
           row.appendChild(nameCell);
@@ -121,6 +134,10 @@ function refreshLobbies() {
 
           row.classList.add("lobby")
           row.classList.add("nes-pointer")
+
+          if (room.gameStarted){
+            row.style.color = "rgba(255,0,0,0.7)"
+          }
 
           row.addEventListener('click', () => { // Joining a lobby once clicked
             socket.emit('joinRoom', { room: room.name, playerName: playerName });
@@ -159,6 +176,17 @@ function changePlayerImg(id, color){
   playerIcon.src = "playerIcons/" + color + "PlayerImg.png";
 }
 
+function errorPopup(errorMessage) {
+  openMenu("errorPopup");
+  document.querySelector("#errorMessage").textContent = errorMessage;
+}
+
+document.querySelector("#closePopup").addEventListener("click", () => {
+  openMenu("lobbyBrowser");
+})
+
+document.querySelector("#closeOptions").addEventListener("click", () => { openMenu("mainMenu") })
+document.querySelector("#changeName").addEventListener("click", () => { openMenu("chooseName") })
 
 document.querySelector("#closeLobbybrowser").addEventListener("click", () => { openMenu("mainMenu") })
 
