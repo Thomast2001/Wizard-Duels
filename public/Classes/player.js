@@ -148,7 +148,11 @@ class Player{
             // Health
             ctx.font = "12px PressStart2P";
             ctx.strokeStyle = "grey";
-            ctx.fillStyle = "rgba(0,255,0,100)";
+            if (players[socket.id] == this){
+                ctx.fillStyle = "rgb(0,255,0)";
+            } else {
+                ctx.fillStyle = "rgb(255,0,0)";
+            }
             ctx.fillRect(this.x-25, this.y-26, this.health / 100 * 48, 3)
             ctx.beginPath();
             ctx.strokeRect(this.x-26, this.y - 27, 50, 5);
