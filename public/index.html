@@ -73,14 +73,21 @@
         
     </div>
     
-    <div id="waitingRoom" class="window nes-container">
-        <i id="leaveCloseButton" class="nes-icon close nes-pointer close-button"></i>
-        
-        <ul id="playerList">
-        </ul>   
-        <button id="readyButton" class="browser-button nes-btn is-success">Ready up!</button>
-        <button id="colorButton" class="browser-button nes-btn">Color</button>
+    <div id="waitingRoom" class="window">
+        <div id="shop" class="nes-container">
+            <button class="shopItem"></button>
+        </div>
+        <div id="playerListContainer" class="nes-container">
+            <i id="leaveCloseButton" class="nes-icon close nes-pointer close-button"></i>
+            
+            <ul id="playerList">
+            </ul>   
+            <button id="readyButton" class="browser-button nes-btn is-success">Ready up!</button>
+            <button id="colorButton" class="browser-button nes-btn">Color</button>
+        </div>
+    
     </div>
+    
     
     <div id="leaveGameDiv" class="nes-container popup">
         <button id="disconnectCancelButton" class="nes-btn">Cancel</button>

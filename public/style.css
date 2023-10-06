@@ -89,6 +89,15 @@
   overflow: auto;
 }
 
+#shop {
+  flex-grow: 3;
+}
+
+.shopItem {
+  width: 40px;
+  height: 40px;
+}
+
 #menuButtons{
   display: block;
   align-items: center;
@@ -279,3 +288,4 @@ input[type="range"] {
   height: 40px;
   border: none;
 }
+

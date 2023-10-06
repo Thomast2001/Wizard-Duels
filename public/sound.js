@@ -12,6 +12,17 @@ for (let i = 1; i < 4; i++) {
     airwaveSounds.push(new Audio(`sounds/Airwave${i}.wav`));
 }
 
+function changeVolume(newVolume) {
+    for (let i = 0; i < 3; i++) {
+        explosionSounds[i].volume = newVolume;
+        attackSounds[i].volume = newVolume;
+        lightningSounds[i].volume = newVolume;
+        teleportSounds[i].volume = newVolume;
+        airwaveSounds[i].volume = newVolume;
+    }
+    console.log("vol chagne")
+}
+
 function playSound(sounds){
     let index = Math.floor(Math.random()*3);
     sounds[index].cloneNode(true).play();

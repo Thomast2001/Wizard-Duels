@@ -60,6 +60,7 @@ function openMenu(menu){
       break;
     case "waitingRoom":
       waitingRoom.style.display = 'flex';
+      shop.style.display = 'flex';
       break;
     case "errorPopup":
       errorPopupDiv.style.display = 'block';
@@ -187,6 +188,7 @@ document.querySelector("#closePopup").addEventListener("click", () => {
 
 document.querySelector("#closeOptions").addEventListener("click", () => { openMenu("mainMenu") })
 document.querySelector("#changeName").addEventListener("click", () => { openMenu("chooseName") })
+document.querySelector("#volume").addEventListener("change", (e) => { changeVolume(e.target.value/100) })
 
 document.querySelector("#closeLobbybrowser").addEventListener("click", () => { openMenu("mainMenu") })
 

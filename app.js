@@ -36,6 +36,11 @@ io.on('connection', (socket) => {
         /////////////////////////////////
 
     socket.on("joinRoom", joined => {
+        if (!validate.PlayerName(joined.playerName)){  // Validate the player name
+            socket.emit('error', 'Error: Player name does not meet the requirements');
+            return;
+        }
+
         let roomJoined = joined.room
         let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
         if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex].gameStarted) { // Check if room exists and player is not already in room 
@@ -60,6 +65,8 @@ io.on('connection', (socket) => {
             socket.emit('error', 'Error: Lobby name already exists');
             return;
         }
+        console.log(room.playerName)
+        console.log(players[socket.id].name)
 
         if (!validate.PlayerName(room.playerName)){  // Validate the player name
             socket.emit('error', 'Error: Player name does not meet the requirements');
