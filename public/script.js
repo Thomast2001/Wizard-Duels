@@ -18,107 +18,47 @@ canvas.addEventListener("resize", () =>{
     canvas.height = window.innerHeight  
 });
 
-function drawLoops(players){
-    fireballs.forEach((fireball) => {
-        fireball.draw();
-    })
-
-    for (let id in players) {
-        players[id].draw();
-    }
-}
-
 let players = {};
 let fireballs = [];
 let particles = [];
 let healthNumbers = [];
 let explosionsWaves = [];
 let lightnings = [];
-let onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
+let cooldownSeconds = {fireball: 0, airwave: 0, teleport: 0, lightning: 0};
+const abilityCooldowns = {fireball: 1, airwave: 10, teleport: 7.5, lightning: 15};
 let gamePlaying = false;
-
-function handleFireballs(){
-    fireballs.forEach((fireball, index) => {
-        fireball.move();
-        if (fireball.x < 0 || fireball.x > canvas.width || fireball.y < 0 || fireball.y > canvas.height){
-            fireballs.splice(index,1);
-        }
-        fireball.collisionCheck(index, fireballs, players);
-        particles.push(new Particle(fireball.x, fireball.y, 2, 2, `hsla(${Math.floor(Math.random()*30)}, 100%, 50%, 70%)`)); // `hsl(${Math.random()*30+90}, 100,100)`
-    })
-}
-
-function handleParticles(){
-    particles.forEach((particle, index) => {
-        particle.move();
-        if (particle.radius < 1){
-            particles.splice(index,1);
-        }
-        particle.draw();        
-    });
-}
-
-function handleHealthNumbers(){
-    healthNumbers.forEach((number, index) => {
-        number.draw(players);    
-        number.move();
-        if (number.speedY > 5){
-            healthNumbers.splice(index,1);
-        }
-    });
-}
-
-function handleExplosionWaves(){
-    explosionsWaves.forEach((explosion, index) => {
-        explosion.draw();        
-        explosion.update();
-        if (explosion.alpha < 1){
-            explosionsWaves.splice(index,1);
-        }
-    });
-}
-
-function handleLightnings(){
-    lightnings.forEach( (lightning, index) => {
-        lightning.draw();
-        lightning.framesLeft--;
-        if (lightning.framesLeft < 0){
-            lightnings.splice(index,1);
-        }
-    });
-}
 
 canvas.addEventListener("keydown", (event) => {
     event.preventDefault();
     if (players[socket.id].health > 0 && !players[socket.id].stunned && gamePlaying) {
         switch (event.code) {
             case "KeyQ":
-                if (!onCooldown.fireball) {
+                if (!cooldownSeconds.fireball) {
                     socket.emit('fireball', mouse);
                     playSound(attackSounds);
                     fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
-                    cooldown(onCooldown, "fireball", 1000);
+                    cooldown(cooldownSeconds, "fireball", 1);
                 }
                 break;
             case "KeyW":
-                if (!onCooldown.airwave) {
+                if (!cooldownSeconds.airwave) {
                     socket.emit("airwave");
-                    cooldown(onCooldown, "airwave", 10000);
+                    cooldown(cooldownSeconds, "airwave", 10);
                 }
                 break;
             case "KeyE":
-                if (!onCooldown.teleport) {
+                if (!cooldownSeconds.teleport) {
                     socket.emit('teleport', mouse);
                     players[socket.id].calcSpeed(mouse.x, mouse.y);
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     teleport(players[socket.id], mouse);
-                    cooldown(onCooldown, "teleport", 7500);
+                    cooldown(cooldownSeconds, "teleport", 7.5);
                 }
                 break;
             case "KeyR":
-                if (!onCooldown.lightning) {
+                if (!cooldownSeconds.lightning) {
                     let lightning = createLightning(lightnings, mouse.x, mouse.y);
                     let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
                     if (playerHit) {
@@ -127,7 +67,7 @@ canvas.addEventListener("keydown", (event) => {
                     } else {
                         socket.emit("lightning", { x: mouse.x, y: mouse.y })
                     }
-                    cooldown(onCooldown, "lightning", 15000);
+                    cooldown(cooldownSeconds, "lightning", 15);
                 }
                 break;
             case "d":
@@ -197,6 +137,7 @@ socket.on("startGame", () => {
     }
     gamePlaying = true;
     document.querySelector("#game_menu").style.display = "none"
+    document.querySelector("#hud").style.display = "flex"
 })
 
 socket.on("endGame", () => {
@@ -206,6 +147,7 @@ socket.on("endGame", () => {
     setTimeout(() => {
         gamePlaying = false;
         document.querySelector("#game_menu").style.display = "block"
+        document.querySelector("#hud").style.display = "none"
     }, 2000);
 })
 
@@ -213,11 +155,12 @@ socket.on("updatePlayers", (updatedPlayers) => {
     for (let playerID in players) {
         players[playerID].updateHealth(updatedPlayers[playerID].health, playerID);
 
-        if (playerID == socket.id){
+        if (playerID == socket.id){  // Might add player movement prediction later here
             players[playerID].x = updatedPlayers[playerID].x;
             players[playerID].y = updatedPlayers[playerID].y;
             
-            // console.log("calculate actual posistion"); // ja gør det tak
+            healthBarText.innerText = players[socket.id].health + "/" + 100;
+            healthBar.value = players[socket.id].health;
         } else{
             players[playerID].x = updatedPlayers[playerID].x;
             players[playerID].y = updatedPlayers[playerID].y;
@@ -267,6 +210,10 @@ setInterval(() => {
         players[id].handleAnimation();
     }
 }, 110);
+
+setInterval(() => {
+    updateCooldown(cooldownSeconds, abilityCooldowns);
+}, 100);
 
 function animate(){
     ctx.drawImage(background, 0, 0);

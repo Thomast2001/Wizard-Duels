@@ -16,7 +16,7 @@
 <div id="game_menu">
     
     <form id="chooseName" class="main_menu">
-        <input type="text" id="nameInput" placeholder="Enter Name" class="nes-input" minlength="3" max="13" required>
+        <input type="text" id="nameInput" placeholder="Enter Name" class="nes-input" minlength="3" maxlength="13" required>
         <button type="submit" id="chooseNameButton" class="nes-btn is-success menuButtons">Continue</button>
     </form>
     
@@ -61,10 +61,10 @@
                 
         <form id="createLobbyForm" class="nes-container">
             <label for="roomName">Room Name:</label>
-            <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="20" class="nes-input" required>
+            <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="15" class="nes-input" required>
             
             <label for="password">Password:</label>
-            <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="20">
+            <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="15">
             
             <button type="submit" class="browser-button nes-btn">Create Lobby</button>
         </form>
@@ -97,6 +97,36 @@
     
 </div>
 
+<div id="hud">
+    <div class="hudContainer">
+        <div class="abilityDiv">
+            <div id="fireballBox" class="cooldownBox"></div>
+            <img src="abilityImages/Fireball.png" class="abilityIMG">
+            <p id="fireballP" class="cooldownP"></p>
+        </div>
+        <div class="abilityDiv">
+            <div id="airwaveBox" class="cooldownBox"></div>
+            <img src="abilityImages/Airwave.png" class="abilityIMG">
+            <p id="airwaveP" class="cooldownP"></p>
+        </div>
+        <div class="abilityDiv">
+            <div id="teleportBox" class="cooldownBox"></div>
+            <img src="abilityImages/Teleport.png" class="abilityIMG">
+            <p id="teleportP" class="cooldownP"></p>
+        </div>
+        <div class="abilityDiv">
+            <div id="lightningBox" class="cooldownBox"></div>
+            <img src="abilityImages/Lightning.png" class="abilityIMG">
+            <p id="lightningP" class="cooldownP"></p>
+        </div>
+    </div>
+
+    <div class="hudContainer">
+        <progress id="healthBar" class="nes-progress is-success" value="100" max="100">asd/100</progress>
+        <span id="healthBarText">100 / 100</span>
+    </div>
+</div>
+
 <div id="errorPopup" class="popup nes-container">
     <p id="errorMessage">Error: Lobby name already exists</p>
     <button id="closePopup" class="nes-btn is-error">Close</button>
@@ -108,6 +138,7 @@
     <script src="Classes/particle.js"></script>
     <script src="sound.js"></script>
     <script src="script.js"></script>
+    <script src="gameFunctions.js"></script>
     <script src="menu.js"></script>
 </body>
 </html>

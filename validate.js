@@ -1,8 +1,8 @@
 function LobbyData(rooms, roomName, password) {
-    if (typeof roomName !== 'string' || roomName.length < 3 || roomName.length > 50) {
+    if (typeof roomName !== 'string' || roomName.length < 3 || roomName.length > 15) {
         return false;
     }
-    if (typeof password !== 'string' || password.length > 20) {
+    if (typeof password !== 'string' || password.length > 15) {
         return false;
     }
 

@@ -127,9 +127,3 @@ function createLightning(lightnings, x, y){
 }
 
 
-function cooldown(onCooldown, ability, cooldown){
-    onCooldown[ability] = true; 
-    setTimeout(() => {
-        onCooldown[ability] = false; 
-    }, cooldown);
-}

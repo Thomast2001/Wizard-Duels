@@ -289,3 +289,63 @@ input[type="range"] {
   border: none;
 }
 
+#hud {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  position: absolute;
+  z-index: 5;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.abilityIMG {
+  border: solid;
+  border-color: rgb(62, 62, 62);
+  border-width: 4px;
+  border-radius: 10px;
+}
+
+.hudContainer{
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+#healthBar {
+  height: 40px;
+}
+
+.abilityDiv {
+  position: relative;
+}
+
+.cooldownP {
+  position: absolute;
+  font-size: 23px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cooldownBox {
+  position: absolute;
+  border-radius: 10px;
+  height: 0%;
+  width: 100%;
+  bottom: 0;
+  background-color: #9595959b;
+}
+
+#healthBar {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#healthBarText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

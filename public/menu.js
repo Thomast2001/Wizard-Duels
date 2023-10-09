@@ -205,6 +205,7 @@ disconnectButton.addEventListener("click", () => {
   gamePlaying = false;
   players = {};
   playerList.innerHTML = "" // Clear the list of players in the waiting room
+  document.querySelector("#hud").style.display = "flex"
   openMenu('lobbyBrowser')
 });
 
