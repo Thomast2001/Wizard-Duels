@@ -83,6 +83,7 @@ document.querySelector('#chooseName').addEventListener('submit', (e) => {
 
 document.querySelector('#playButton').addEventListener('click', () => {
   openMenu("lobbyBrowser");
+  hideGameTitle();
 })
 
 document.querySelector('#optionsButton').addEventListener('click', () => {
@@ -190,7 +191,10 @@ document.querySelector("#closeOptions").addEventListener("click", () => { openMe
 document.querySelector("#changeName").addEventListener("click", () => { openMenu("chooseName") })
 document.querySelector("#volume").addEventListener("change", (e) => { changeVolume(e.target.value/100) })
 
-document.querySelector("#closeLobbybrowser").addEventListener("click", () => { openMenu("mainMenu") })
+document.querySelector("#closeLobbybrowser").addEventListener("click", () => { 
+  openMenu("mainMenu") 
+  showGameTitle();
+})
 
 document.querySelector("#leaveCloseButton").addEventListener("click", () => {
   leaveGameDiv.style.display = "flex";
@@ -205,7 +209,7 @@ disconnectButton.addEventListener("click", () => {
   gamePlaying = false;
   players = {};
   playerList.innerHTML = "" // Clear the list of players in the waiting room
-  document.querySelector("#hud").style.display = "flex"
+  document.querySelector("#hud").style.display = "none"
   openMenu('lobbyBrowser')
 });
 

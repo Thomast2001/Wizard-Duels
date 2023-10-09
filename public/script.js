@@ -80,7 +80,7 @@ canvas.addEventListener("keydown", (event) => {
     }
 });
 
-canvas.addEventListener("mousemove", (event) => {
+window.addEventListener("mousemove", (event) => {
     var rect = canvas.getBoundingClientRect(), // abs. size of element
     scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for x
     scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for y
