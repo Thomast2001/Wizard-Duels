@@ -90,12 +90,8 @@
 }
 
 #shop {
-  flex-grow: 3;
-}
-
-.shopItem {
-  width: 40px;
-  height: 40px;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 #menuButtons{
@@ -348,4 +344,114 @@ input[type="range"] {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.shop-row {
+  display: flex;
+  justify-content: space-inbetween;
+  gap: 20px;
+  flex-direction: row;
+}
+
+.shop-item-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-item-image {
+  display: block;
+  border-radius: 10px;
+  border: solid;
+  border-color: rgba(255, 255, 255, 0.0);
+}
+
+.shop-item-image:hover {
+  border: solid;  
+  border-color: rgba(255, 255, 255, 0.624)
+}
+
+.upgrade-lights {
+  justify-content: space-around;
+  display: flex;
+  align-content: center;
+  margin-top: 5px;
+}
+
+.level-light-green {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(81, 212, 74, 0.77);
+  box-shadow: 0px 0px 5px rgba(0, 255, 0, 0.9);
+  border-radius: 50%;
+}
+
+.level-light-black {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(47, 47, 47, 0.77);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+}
+
+#gold {
+  position: absolute;
+  color: yellow;
+  font-size: large;
+  right: 3px;
+  bottom: 3px;
+}
+
+.tooltip {
+  display:inline-block;
+  position:relative;
+  border-bottom:1px dotted #666;
+  text-align:left;
+}
+
+.tooltip .right {
+  min-width:300px;
+  width: auto; 
+  top:50%;
+  left:100%;
+  margin-left:20px;
+  transform:translate(0, -40%);
+  padding:10px 20px;
+  color:#444444;
+  background-color:#EEEEEE;
+  font-weight:normal;
+  font-size:13px;
+  border-radius:8px;
+  position:absolute;
+  z-index:99999999;
+  box-sizing:border-box;
+  box-shadow:0 1px 8px rgba(0,0,0,0.5);
+  visibility:hidden; opacity:0; transition:opacity 0.1s;
+}
+
+.tooltip:hover .right {
+  visibility:visible; opacity:1;
+}
+
+.tooltip .right i {
+  position:absolute;
+  top:40%;
+  right:100%;
+  margin-top:-12px;
+  width:12px;
+  height:24px;
+  overflow:hidden;
+}
+
+.tooltip .right i::after {
+  content:'';
+  position:absolute;
+  width:12px;
+  height:12px;
+  left:0;
+  top:50%;
+  transform:translate(50%,-50%) rotate(-45deg);
+  background-color:#b3b3b3;
+  box-shadow:0 1px 8px rgba(0,0,0,0.5);
 }
