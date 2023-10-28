@@ -226,4 +226,7 @@ function animate(){
     }
     requestAnimationFrame(animate);
 }
+
 document.onload = animate();
+
+gamePlaying = true;

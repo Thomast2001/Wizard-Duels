@@ -3,6 +3,7 @@ let attackSounds = [];
 let lightningSounds = [];
 let teleportSounds = [];
 let airwaveSounds = [];
+let volume = 0.5;
 
 for (let i = 1; i < 4; i++) {
     explosionSounds.push(new Audio(`sounds/Explosion${i}.wav`));
@@ -13,17 +14,13 @@ for (let i = 1; i < 4; i++) {
 }
 
 function changeVolume(newVolume) {
-    for (let i = 0; i < 3; i++) {
-        explosionSounds[i].volume = newVolume;
-        attackSounds[i].volume = newVolume;
-        lightningSounds[i].volume = newVolume;
-        teleportSounds[i].volume = newVolume;
-        airwaveSounds[i].volume = newVolume;
-    }
-    console.log("vol chagne")
+    volume = newVolume;
+    playSound(explosionSounds);
 }
 
 function playSound(sounds){
     let index = Math.floor(Math.random()*3);
-    sounds[index].cloneNode(true).play();
+    let sound = sounds[index].cloneNode(true); // Clone the audio node so that it can be played multiple times at once
+    sound.volume = volume;
+    sound.play();
 }

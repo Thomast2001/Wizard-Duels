@@ -15,6 +15,7 @@ class Player{
         this.x = 200; 
         this.dead = false;
         this.health = 100;
+        this.maxHealth = 100;
         this.color = color
         this.speedTotal = 2;
         this.speedX = 0;
@@ -140,13 +141,15 @@ class Player{
                 this.animationFrame = 0;
             }
             ctx.drawImage(spriteSheets[this.color], this.frameX, this.frameY, spriteSize, spriteSize, this.x-spriteSize, this.y-spriteSize, spriteSize*2, spriteSize*2);
-            //console.log(this.animationFrame)
+            
             // Name
+            ctx.font = "12px PressStart2P";
+            ctx.letterSpacing = "0px";
+
             ctx.fillStyle = "grey";
-            ctx.fillText(this.name, this.x - this.nameWidth/2, this.y - 35)
+            ctx.fillText(this.name, this.x, this.y - 35);
             
             // Health
-            ctx.font = "12px PressStart2P";
             ctx.strokeStyle = "grey";
             if (players[socket.id] == this){
                 ctx.fillStyle = "rgb(0,255,0)";

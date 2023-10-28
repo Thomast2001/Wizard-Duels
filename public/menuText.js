@@ -151,5 +151,7 @@ function showGameTitle(){
 }
 
 function hideGameTitle() {
+  ctx.font = "12px PressStart2P";
+  ctx.letterSpacing = "0px";
   effect = null;
 }

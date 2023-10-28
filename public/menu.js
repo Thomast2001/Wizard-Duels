@@ -214,6 +214,3 @@ disconnectButton.addEventListener("click", () => {
 });
 
 refreshLobbies()
-
-
-openMenu("waitingRoom")

@@ -50,7 +50,7 @@ class ExplosionWave{
 
 class healthChangeNumber {
   constructor(x, y, number, playerID) {
-    this.x = -ctx.measureText("-1").width/2 - 5;
+    this.x = -5;
     this.y = 30;
     if (Math.random() > 0.5) {this.speedX = 1}
     else {this.speedX = -1}
@@ -66,14 +66,6 @@ class healthChangeNumber {
     this.y += this.speedY;
   }
 
-  drawStroked(text, x, y) {
-    ctx.font = "20px Sans-serif"
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 8;
-    ctx.strokeText(text, x, y);
-    ctx.fillStyle = 'red';
-    ctx.fillText(text, x, y);
-}
 
   draw(players) {
     console.log(ctx.font)
