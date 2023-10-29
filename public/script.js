@@ -147,7 +147,6 @@ socket.on("startGame", () => {
 })
 
 socket.on("endGame", (winnerID) => {
-    console.log(winnerID);
     if (winnerID != null) {
         const trophyElement = document.createElement('i');
         trophyElement.className = 'nes-icon trophy is-small';
@@ -161,6 +160,16 @@ socket.on("endGame", (winnerID) => {
         document.querySelector("#game_menu").style.display = "block"
         document.querySelector("#hud").style.display = "none"
     }, 2000);
+})
+
+socket.on("gameOver", (winnerName) => {
+    setTimeout(() => {
+        socket.emit('leaveLobby');
+        reset();
+        resetShop();
+        document.querySelector('#game_menu').style.display = "block";
+        errorPopup(winnerName + " won the game!");
+    }, 1500);
 })
 
 socket.on("updatePlayers", (updatedPlayers) => {
@@ -221,7 +230,7 @@ setInterval(() => {
     for (let id in players) {
         players[id].handleAnimation();
     }
-}, 110);
+}, 95);
 
 setInterval(() => {
     updateCooldown(cooldownSeconds, abilityCooldowns);

@@ -211,9 +211,6 @@ io.on('connection', (socket) => {
         }
     });
 
-  // socket.on('dead', () => {
-  //     console.log("dead");
-  // })
 
     socket.on('disconnect', () => {
         console.log(socket.id)
@@ -223,15 +220,6 @@ io.on('connection', (socket) => {
         if (currentRoom != null){
             let roomIndex = findRoomIndex(rooms, currentRoom);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
-           // let roomIndex = findRoomIndex(rooms, currentRoom);
-           // let IDindex = rooms[roomIndex].playerIDs.indexOf(socket.id); 
-           // rooms[roomIndex].playerIDs.splice(IDindex, 1); // Remove playerID from the room
-           // roomFunctions.unreadyAllPlayers(io, rooms[roomIndex], players);
-//
-           // if (rooms[roomIndex].playerIDs.length === 0) { // if the room is empty after disconnect the room is removed
-           //     rooms.splice(roomIndex, 1);
-           //     delete fireballs[currentRoom];
-           // }
         }
         
 
@@ -259,10 +247,12 @@ let updateInterval = setInterval(() => {
         if (room.gamePlaying) {
             if (roomFunctions.allPlayersDead(players, room)) {// If only 1 player is alive, end the game
                 const winner = roomFunctions.getWinner(players, room);
-                io.in(room.name).emit("endGame", (winner));
-                room.gamePlaying = false;
-                roomFunctions.unreadyAllPlayers(io, room, players);
-                roomFunctions.updateGold(io, players, winner, room.playerIDs);
+                players[winner].wins++;
+                if (players[winner].wins >= 5) {
+                    io.in(room.name).emit("gameOver", (players[winner].name));
+                } else {
+                    roomFunctions.endRound(io, players, winner, room)
+                }
             }
             updatedPlayers = {};
             room.playerIDs.forEach(id => {

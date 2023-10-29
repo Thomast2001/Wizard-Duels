@@ -83,6 +83,7 @@ document.querySelector('#chooseName').addEventListener('submit', (e) => {
 
 document.querySelector('#playButton').addEventListener('click', () => {
   openMenu("lobbyBrowser");
+  refreshLobbies();
   hideGameTitle();
 })
 
@@ -212,5 +213,3 @@ function reset() {
   playerList.innerHTML = "" // Clear the list of players in the waiting room
   document.querySelector("#hud").style.display = "none"
 }
-
-refreshLobbies()

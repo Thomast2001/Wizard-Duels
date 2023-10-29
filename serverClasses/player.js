@@ -18,6 +18,7 @@ class Player{
         this.ready = false;
         this.gold = 250;
         this.levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
+        this.wins = 0;
     }
 
     calcSpeed(mouseX, mouseY) {

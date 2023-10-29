@@ -60,4 +60,11 @@ function updateGold(io, players, winner, playerIDs){
     });
 }
 
-module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby, getWinner, updateGold }
+function endRound(io, players, winner, room) {
+    io.in(room.name).emit("endGame", (winner));
+    room.gamePlaying = false;
+    unreadyAllPlayers(io, room, players);
+    updateGold(io, players, winner, room.playerIDs);
+}
+
+module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby, getWinner, endRound }
