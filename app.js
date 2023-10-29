@@ -10,6 +10,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const upgrades = require('./public/upgrades.json');
 
 const port = 3000
 
@@ -110,7 +111,7 @@ io.on('connection', (socket) => {
 
     socket.on("color", () => {
         const room = rooms[findRoomIndex(rooms, currentRoom)];
-        if (!room.gamePlaying) {
+        if (currentRoom && !room.gamePlaying) {
             console.log(room.freeColors);
             room.freeColors.push(players[socket.id].color);
             const newColor = room.freeColors.shift();
@@ -130,6 +131,20 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("shop" , (purchased) => {
+        console.log(purchased)
+        console.log(players[socket.id].gold);
+        console.log(upgrades[purchased].cost);
+        const currentLevel = players[socket.id].levels[purchased];
+        if (currentRoom != null && players[socket.id].gold >= upgrades[purchased].cost[currentLevel]) {
+            console.log("yes" + purchased);
+            players[socket.id].gold -= upgrades[purchased].cost[currentLevel];
+            players[socket.id].levels[purchased] += 1;
+            socket.emit("updateGold", players[socket.id].gold);
+            io.in(currentRoom).emit("upgradePurchased", ({'playerID': socket.id, 'purchased': purchased})); // Send the upgrade to all clients
+        }
+    });
+
         /////////////////////////////////
         // Player is in a started game //
         /////////////////////////////////
@@ -137,7 +152,7 @@ io.on('connection', (socket) => {
     socket.on('moveClick', (click) => {
         if (players[socket.id].health > 0 && !players[socket.id].stunned) {
             players[socket.id].calcSpeed(click.x, click.y);
-            socket.to(currentRoom).emit("move", {'id': socket.id, x: click.x, y: click.y});
+            socket.to(currentRoom).emit("move", {'id': socket.id, 'x': click.x, 'y': click.y});
         }
     })
 

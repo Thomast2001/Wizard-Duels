@@ -126,7 +126,11 @@ socket.on("unreadyAll", (id) => {
     readyButton.textContent = "Ready up!";
 })
 
+socket.on("updateGold", (gold) => { updateGold(gold) });
+
 socket.on("error", (errorMessage) => errorPopup(errorMessage));
+
+socket.on("upgradePurchased", (shop) => upgradePurchased(players, shop.playerID, shop.purchased));
 
 socket.on("startGame", () => {
     for (let playerID in players) {

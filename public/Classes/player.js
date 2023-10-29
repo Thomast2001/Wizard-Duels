@@ -33,6 +33,7 @@ class Player{
         this.frames;
         this.stunned = false;
         this.ready = false;
+        this.levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
     }
 
     calcSpeed(mouseX, mouseY) {
