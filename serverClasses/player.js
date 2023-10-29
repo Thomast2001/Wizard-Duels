@@ -1,8 +1,9 @@
 class Player{
     constructor(color, name){
         this.x = 200;
-        this.y = 200
-        this.health = 10;
+        this.y = 200;
+        this.health = 100;
+        this.maxHealth = 100;
         this.color = color
         this.speedTotal = 2;
         this.speedX = 0;
@@ -10,12 +11,12 @@ class Player{
         this.targetPosX = undefined;
         this.targetPosY = undefined;
         this.knockbackX = 0;
-        this.knockbackY = 0;
+        this.knockbackY = 0; 
         this.name = name;
         this.stunned = false;
         this.onCooldown = {fireball: false, airwave: false, teleport: false, lightning: false};
         this.ready = false;
-        this.gold = 250;
+        this.gold = 5000;
         this.levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
     }
 

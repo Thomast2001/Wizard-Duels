@@ -137,7 +137,11 @@ io.on('connection', (socket) => {
         console.log(upgrades[purchased].cost);
         const currentLevel = players[socket.id].levels[purchased];
         if (currentRoom != null && players[socket.id].gold >= upgrades[purchased].cost[currentLevel]) {
-            console.log("yes" + purchased);
+            if (purchased == 'Health') {
+                players[socket.id].maxHealth += 20;
+            } else if (purchased == 'Boots') {
+                players[socket.id].speedTotal += 0.25;
+            }
             players[socket.id].gold -= upgrades[purchased].cost[currentLevel];
             players[socket.id].levels[purchased] += 1;
             socket.emit("updateGold", players[socket.id].gold);
@@ -158,8 +162,11 @@ io.on('connection', (socket) => {
 
     socket.on('fireball', targetPos => {
         if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['fireball']) {
-            fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, targetPos.x, targetPos.y, socket.id));
+                        && !players[socket.id].onCooldown['fireball'] && players[socket.id].levels.Fireball > 0) {
+            const fireballLevel = players[socket.id].levels.Fireball;
+            fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, 
+                        targetPos.x, targetPos.y, socket.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
+
             socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
                             'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
             players[socket.id].cooldown('fireball', 950);
@@ -168,18 +175,21 @@ io.on('connection', (socket) => {
     
     socket.on('airwave', () => {
         if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['airwave']) {
+                        && !players[socket.id].onCooldown['airwave'] && players[socket.id].levels.Airwave > 0) {
             io.to(currentRoom).emit('airwave', socket.id);
-            A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, fireballs);
-            players[socket.id].cooldown('airwave', 9950);
+            const airwaveLevel = players[socket.id].levels.Airwave;
+            const pushMultiplier = upgrades.Airwave.pushMultiplier[airwaveLevel]
+            const cooldown = upgrades.Airwave.cooldown[airwaveLevel] * 1000;
+            A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, pushMultiplier);
+            players[socket.id].cooldown('airwave', cooldown - 50);
         }
     }) 
 
     socket.on('teleport', pos => {
         if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['teleport']) {
+                        && !players[socket.id].onCooldown['teleport'] && players[socket.id].levels.Teleport > 0) {
             players[socket.id].calcSpeed(pos.x, pos.y);
-            A.teleport(players[socket.id], pos);
+            A.teleport(players[socket.id], pos, upgrades);
             socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
             players[socket.id].cooldown('teleport', 7450);
         }
@@ -187,13 +197,15 @@ io.on('connection', (socket) => {
 
     socket.on('lightning', (lightning) => {
         if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['lightning']) {
+                && !players[socket.id].onCooldown['lightning'] && players[socket.id].levels.Lightning > 0) {
+            const lightningLevel = players[socket.id].levels.Lightning;
+            const cooldown = upgrades.Lightning.cooldown[lightningLevel] * 1000;
             if (lightning.playerHit) {
-                players[lightning.playerHit].health -= 1;
+                players[lightning.playerHit].health -= upgrades.Lightning.damage[lightningLevel];
                 players[lightning.playerHit].stun(1500, players, lightning.playerHit); // Stun the player hit
-            } 
+            }
             socket.to(currentRoom).emit('lightning', lightning)
-            players[socket.id].cooldown('lightning', 14950);
+            players[socket.id].cooldown('lightning', cooldown - 50);
         }
     });
 
@@ -244,9 +256,11 @@ let updateInterval = setInterval(() => {
     rooms.forEach(room => {
         if (room.gamePlaying) {
             if (roomFunctions.allPlayersDead(players, room)) {// If only 1 player is alive, end the game
-                io.in(room.name).emit("endGame");
+                const winner = roomFunctions.getWinner(players, room);
+                io.in(room.name).emit("endGame", (winner));
                 room.gamePlaying = false;
                 roomFunctions.unreadyAllPlayers(io, room, players);
+                roomFunctions.updateGold(io, players, winner, room.playerIDs);
             }
             updatedPlayers = {};
             room.playerIDs.forEach(id => {

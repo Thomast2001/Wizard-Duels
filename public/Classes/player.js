@@ -57,8 +57,10 @@ class Player{
 
     updateHealth(updatedHealth, playerID) {
         if (this.health != updatedHealth) {
-            healthNumbers.push(new healthChangeNumber(this.x, this.y, updatedHealth-this.health, playerID));
-            this.health = updatedHealth; 
+            if (this.health > updatedHealth) {
+                healthNumbers.push(new healthChangeNumber(this.x, this.y, updatedHealth-this.health, playerID));
+            }
+            this.health = updatedHealth;
             if (updatedHealth <= 0) {
                 this.changeAnimationState("death");
             }
@@ -157,7 +159,7 @@ class Player{
             } else {
                 ctx.fillStyle = "rgb(255,0,0)";
             }
-            ctx.fillRect(this.x-25, this.y-26, this.health / 100 * 48, 3)
+            ctx.fillRect(this.x-25, this.y-26, this.health / this.maxHealth * 48, 3)
             ctx.beginPath();
             ctx.strokeRect(this.x-26, this.y - 27, 50, 5);
             ctx.stroke();
@@ -188,4 +190,4 @@ const animationStates = [
     },
 ];
 
-const animationIndexes = ['idle', 'run', 'death', 'attack', 'idleLeft', 'runLeft', 'deathLeft', 'attackLeft'];
+const animationIndexes = ['idle', 'run', 'death', 'attack'];

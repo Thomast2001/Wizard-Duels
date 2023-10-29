@@ -38,4 +38,26 @@ function playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, playerID, 
     }
 }
 
-module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby }
+function getWinner(players, room) {
+    let winner = null
+    room['playerIDs'].forEach(id => {
+        console.log(players[id].health);
+        if (players[id].health > 0) {
+            winner = id;
+        }
+    });
+    return winner;
+}
+
+function updateGold(io, players, winner, playerIDs){
+    playerIDs.forEach(id => {
+        if (id == winner) {
+            players[id].gold += 400;
+        } else {
+            players[id].gold += 300;
+        }
+        io.to(id).emit("updateGold", players[id].gold);
+    });
+}
+
+module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby, getWinner, updateGold }

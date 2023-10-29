@@ -24,8 +24,8 @@ let particles = [];
 let healthNumbers = [];
 let explosionsWaves = [];
 let lightnings = [];
-let cooldownSeconds = {fireball: 0, airwave: 0, teleport: 0, lightning: 0};
-const abilityCooldowns = {fireball: 1, airwave: 10, teleport: 7.5, lightning: 15};
+let cooldownSeconds = {Fireball: 0, Airwave: 0, Teleport: 0, Lightning: 0};
+let abilityCooldowns = {Fireball: 1, Airwave: 10, Teleport: 7.5, Lightning: 15};
 let gamePlaying = false;
 
 canvas.addEventListener("keydown", (event) => {
@@ -33,32 +33,33 @@ canvas.addEventListener("keydown", (event) => {
     if (players[socket.id].health > 0 && !players[socket.id].stunned && gamePlaying) {
         switch (event.code) {
             case "KeyQ":
-                if (!cooldownSeconds.fireball) {
+                if (!cooldownSeconds.Fireball && players[socket.id].levels.Fireball > 0) {
                     socket.emit('fireball', mouse);
                     playSound(attackSounds);
-                    fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, mouse.x, mouse.y, socket.id));
+                    fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, 
+                                        mouse.x, mouse.y, socket.id, players[socket.id].levels.Fireball));
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
-                    cooldown(cooldownSeconds, "fireball", 1);
+                    cooldown(cooldownSeconds, "Fireball", abilityCooldowns.Fireball);
                 }
                 break;
             case "KeyW":
-                if (!cooldownSeconds.airwave) {
+                if (!cooldownSeconds.Airwave && players[socket.id].levels.Airwave > 0) {
                     socket.emit("airwave");
-                    cooldown(cooldownSeconds, "airwave", 10);
+                    cooldown(cooldownSeconds, "Airwave", abilityCooldowns.Airwave);
                 }
                 break;
             case "KeyE":
-                if (!cooldownSeconds.teleport) {
+                if (!cooldownSeconds.Teleport && players[socket.id].levels.Teleport > 0) {
                     socket.emit('teleport', mouse);
                     players[socket.id].calcSpeed(mouse.x, mouse.y);
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
-                    teleport(players[socket.id], mouse);
-                    cooldown(cooldownSeconds, "teleport", 7.5);
+                    teleport(players[socket.id], mouse, upgrades);
+                    cooldown(cooldownSeconds, "Teleport", abilityCooldowns.Teleport);
                 }
                 break;
             case "KeyR":
-                if (!cooldownSeconds.lightning) {
+                if (!cooldownSeconds.Lightning && players[socket.id].levels.Lightning > 0) {
                     let lightning = createLightning(lightnings, mouse.x, mouse.y);
                     let playerHit = lightning.collisionCheck(players); // check if lightning hit a player
                     if (playerHit) {
@@ -67,7 +68,7 @@ canvas.addEventListener("keydown", (event) => {
                     } else {
                         socket.emit("lightning", { x: mouse.x, y: mouse.y })
                     }
-                    cooldown(cooldownSeconds, "lightning", 15);
+                    cooldown(cooldownSeconds, "Lightning", abilityCooldowns.Lightning);
                 }
                 break;
             case "d":
@@ -121,6 +122,7 @@ socket.on("color", (msg) => {
 socket.on("unreadyAll", (id) => {
     for (let playerID in players) {
         document.getElementById(playerID).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
+        players[playerID].ready = false;
     }
     readyButton.classList.remove("is-error");
     readyButton.textContent = "Ready up!";
@@ -130,7 +132,7 @@ socket.on("updateGold", (gold) => { updateGold(gold) });
 
 socket.on("error", (errorMessage) => errorPopup(errorMessage));
 
-socket.on("upgradePurchased", (shop) => upgradePurchased(players, shop.playerID, shop.purchased));
+socket.on("upgradePurchased", (shop) => upgradePurchased(players, shop.playerID, shop.purchased, abilityCooldowns));
 
 socket.on("startGame", () => {
     for (let playerID in players) {
@@ -144,7 +146,13 @@ socket.on("startGame", () => {
     document.querySelector("#hud").style.display = "flex"
 })
 
-socket.on("endGame", () => {
+socket.on("endGame", (winnerID) => {
+    console.log(winnerID);
+    if (winnerID != null) {
+        const trophyElement = document.createElement('i');
+        trophyElement.className = 'nes-icon trophy is-small';
+        document.querySelector(`#${winnerID}`).appendChild(trophyElement);
+    }
     for (let playerID in players) {
         players[playerID].dead = false;
     }
@@ -163,7 +171,7 @@ socket.on("updatePlayers", (updatedPlayers) => {
             players[playerID].x = updatedPlayers[playerID].x;
             players[playerID].y = updatedPlayers[playerID].y;
             
-            healthBarText.innerText = players[socket.id].health + "/" + 100;
+            healthBarText.innerText = players[socket.id].health + "/" + players[socket.id].maxHealth;
             healthBar.value = players[socket.id].health;
         } else{
             players[playerID].x = updatedPlayers[playerID].x;
@@ -178,14 +186,14 @@ socket.on("move", (playerMove) => {
 
 socket.on("fireball", (fb) => {
     playSound(attackSounds);
-    fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID));
+    fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID, players[fb.playerID].levels.Fireball));
     players[fb.playerID].changeOrientation(fb.targetPosX - players[fb.playerID].x);
     players[fb.playerID].changeAnimationState("attack");
 });
 
 socket.on('teleport', (tp) => {
     players[tp.playerID].calcSpeed(tp.pos.x, tp.pos.y);
-    teleport(players[tp.playerID], tp.pos);
+    teleport(players[tp.playerID], tp.pos, upgrades);
 });
 
 socket.on('airwave', (id) => {

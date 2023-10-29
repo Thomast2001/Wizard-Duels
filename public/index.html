@@ -66,7 +66,7 @@
             <label for="password">Password:</label>
             <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="15">
             
-            <button type="submit" class="browser-button nes-btn">Create Lobby</button>
+            <button type="submit" class="browser-button nes-btn">Create</button>
         </form>
 
         <i id="closeLobbybrowser" class="nes-icon close nes-pointer close-button"></i>
@@ -81,7 +81,7 @@
                         <img id="FireballShop" src="abilityImages/Fireball.png" class="shop-item-image nes-pointer">
                         <div class="right">
                             <h3 id="FireballTitle">Fireball (100)</h3>
-                            <p>Increases speed and damage of fireballs</p>
+                            <p>Increases speed, knockback, and damage of fireballs</p>
                         </div>
                     </div>
                     <div class="upgrade-lights">
@@ -207,29 +207,29 @@
 <div id="hud">
     <div class="hudContainer">
         <div class="abilityDiv">
-            <div id="fireballBox" class="cooldownBox"></div>
+            <div id="FireballBox" class="cooldownBox"></div>
             <img src="abilityImages/Fireball.png" class="abilityIMG">
-            <p id="fireballP" class="cooldownP"></p>
+            <p id="FireballP" class="cooldownP"></p>
         </div>
         <div class="abilityDiv">
-            <div id="airwaveBox" class="cooldownBox"></div>
+            <div id="AirwaveBox" class="cooldownBox"></div>
             <img src="abilityImages/Airwave.png" class="abilityIMG">
-            <p id="airwaveP" class="cooldownP"></p>
+            <p id="AirwaveP" class="cooldownP"></p>
         </div>
         <div class="abilityDiv">
-            <div id="teleportBox" class="cooldownBox"></div>
+            <div id="TeleportBox" class="cooldownBox"></div>
             <img src="abilityImages/Teleport.png" class="abilityIMG">
-            <p id="teleportP" class="cooldownP"></p>
+            <p id="TeleportP" class="cooldownP"></p>
         </div>
         <div class="abilityDiv">
-            <div id="lightningBox" class="cooldownBox"></div>
+            <div id="LightningBox" class="cooldownBox"></div>
             <img src="abilityImages/Lightning.png" class="abilityIMG">
-            <p id="lightningP" class="cooldownP"></p>
+            <p id="LightningP" class="cooldownP"></p>
         </div>
     </div>
 
     <div class="hudContainer">
-        <progress id="healthBar" class="nes-progress is-success" value="100" max="100">asd/100</progress>
+        <progress id="healthBar" class="nes-progress is-success" value="100" max="100"></progress>
         <span id="healthBarText">100 / 100</span>
     </div>
 </div>

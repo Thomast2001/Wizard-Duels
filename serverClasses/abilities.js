@@ -1,9 +1,9 @@
 class Fireball{
-    constructor(posX, posY, mouseX, mouseY, playerID){
+    constructor(posX, posY, mouseX, mouseY, playerID, speed, damage){
         this.x = posX;
         this.y = posY;
-        this.speed = calcSpeed(posX, posY, mouseX, mouseY, 5);
-        this.damage = 5;
+        this.speed = calcSpeed(posX, posY, mouseX, mouseY, speed);
+        this.damage = damage;
         this.playerID = playerID;
     }
 
@@ -42,9 +42,9 @@ function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
     return {'x': speedX, 'y': speedY};
 }
 
-function teleport(player, pos){
+function teleport(player, pos, upgrades){
     let teleportPos = {'x': pos.x, 'y': pos.y}
-    let maxTeleportDist = 200;
+    let maxTeleportDist = upgrades.Teleport.range[player.levels.Teleport];
     let xDiff = teleportPos.x - player.x;
     let yDiff = teleportPos.y - player.y;
     let distance = Math.hypot(xDiff, yDiff);
@@ -56,8 +56,7 @@ function teleport(player, pos){
     player.y = teleportPos.y;
 }
 
-function airwave(players, casterID, playerIDs, fireballs){
-    let multiplier = 6;
+function airwave(players, casterID, playerIDs, multiplier){
     playerIDs.forEach(playerID => {
         if (playerID != casterID) {
             let xDiff = players[playerID].x - players[casterID].x;

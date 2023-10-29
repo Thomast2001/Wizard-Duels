@@ -1,4 +1,4 @@
-abilities = ['fireball', 'airwave', 'teleport', 'lightning'];
+abilities = ['Fireball', 'Airwave', 'Teleport', 'Lightning'];
 hud = {}
 
 for (let i = 0; i < abilities.length; i++) {
@@ -20,7 +20,6 @@ function updateCooldown(currentCooldowns, abilityCooldowns){
                 hud[`${ability}P`].innerText = currentCooldowns[ability] >= 10 ? Math.floor(currentCooldowns[ability]) : currentCooldowns[ability].toFixed(1);
             }
             hud[`${ability}Box`].style.height = `${currentCooldowns[ability]/abilityCooldowns[ability]*100}%`
-            console.log(`${currentCooldowns[ability]/abilityCooldowns[ability]}%`)
         } else { // to fix floating-point error mitigation
             currentCooldowns[ability] = 0; 
         }

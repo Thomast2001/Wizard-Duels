@@ -17,7 +17,7 @@ function resetPlayers(io, room, players, playerIDs) {
     let updatedPlayers = {};
     playerIDs.forEach(id => {
         updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
-        players[id].health = 100;
+        players[id].health = players[id].maxHealth;
         players[id].speedX = 0;
         players[id].speedY = 0;
         players[id].knockbackX = 0;

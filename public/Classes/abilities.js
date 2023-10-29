@@ -1,8 +1,8 @@
 class Fireball{
-    constructor(posX, posY, mouseX, mouseY, playerID){
+    constructor(posX, posY, mouseX, mouseY, playerID, level){
         this.x = posX;
         this.y = posY;
-        this.speed = calcSpeed(posX, posY, mouseX, mouseY, 5);
+        this.speed = calcSpeed(posX, posY, mouseX, mouseY, upgrades.Fireball.speed[level]);
         this.playerID = playerID;
     }
 
@@ -50,10 +50,10 @@ function calcSpeed(posX, posY, mouseX, mouseY, totalSpeed) {
     return {'x': speedX, 'y': speedY};
 }
 
-function teleport(player, pos){
+function teleport(player, pos, upgrades){
     playSound(teleportSounds);
     let teleportPos = {'x': pos.x, 'y': pos.y}
-    let maxTeleportDist = 200;
+    let maxTeleportDist = upgrades.Teleport.range[player.levels.Teleport];
     let xDiff = teleportPos.x - player.x;
     let yDiff = teleportPos.y - player.y;
     let distance = Math.hypot(xDiff, yDiff);
