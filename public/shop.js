@@ -45,3 +45,19 @@ function upgradePurchased(players, playerID, purchased, abilityCooldowns) {
         players[playerID].speedTotal += 0.25;
     }
 }
+
+function resetShop() {
+    shopItems.forEach(item => {
+        document.querySelector(`#${item}Title`).style.display = `${item} (${upgrades[item].cost[0]})`; // Reset price of all items in the shop
+        for (let i = 1; i < 6; i++) {
+          if (!(item == 'Boots' && i > 3)) { // 'Boots' only has 3 levels
+            document.querySelector(`#${item}Level${i}`).classList.remove("level-light-green"); // reset all "levelLights" to black
+            document.querySelector(`#${item}Level${i}`).classList.add("level-light-black");
+          }
+        }    
+    });
+    document.querySelector('#FireballTitle').style.display = `Fireball (${upgrades.Fireball.cost[1]})`; // Fireball starts at level 1
+    document.querySelector('#FireballLevel1').classList.remove("level-light-black");
+    document.querySelector('#FireballLevel1').classList.add("level-light-green");
+    document.querySelector('#gold').innerText = 250; // Reset gold
+}

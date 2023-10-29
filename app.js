@@ -128,6 +128,8 @@ io.on('connection', (socket) => {
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
             socket.to(currentRoom).emit("playerDisconnect", socket.id);
             currentRoom = null;
+            players[socket.id].gold = 250;
+            players[socket.id].levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
         }
     })
 

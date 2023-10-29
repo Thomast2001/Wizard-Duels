@@ -201,11 +201,16 @@ document.querySelector("#disconnectCancelButton").addEventListener("click", () =
 
 disconnectButton.addEventListener("click", () => {
   socket.emit('leaveLobby');
+  reset();
+  resetShop();
+  openMenu('lobbyBrowser')
+});
+
+function reset() {
   gamePlaying = false;
   players = {};
   playerList.innerHTML = "" // Clear the list of players in the waiting room
   document.querySelector("#hud").style.display = "none"
-  openMenu('lobbyBrowser')
-});
+}
 
 refreshLobbies()
