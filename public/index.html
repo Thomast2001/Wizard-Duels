@@ -47,7 +47,6 @@
                             <th class="Lobby-name">Looby Name</th>
                             <th>Players</th>
                             <th>Joinable</th>
-                            <th>Password</th>
                         </tr>
                     </thead>
                     <tbody id="lobby_table">
@@ -58,13 +57,9 @@
             <button id="refreshButton" class="browser-button nes-btn">Refresh</button>
         </div>
                 
-                
         <form id="createLobbyForm" class="nes-container">
             <label for="roomName">Room Name:</label>
             <input type="text" id="roomNameInput" name="roomName" required minlength="3" maxlength="15" class="nes-input" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="passwordInput" name="password" class="nes-input" maxlength="15">
             
             <button type="submit" class="browser-button nes-btn">Create</button>
         </form>

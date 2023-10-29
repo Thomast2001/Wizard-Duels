@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on("createRoom", room => {
-        if (!validate.LobbyData(rooms, room.roomName, room.password)){ // Validate the room data
+        if (!validate.LobbyData(rooms, room.roomName)){ // Validate the room data
             socket.emit('error', 'Error: Lobby name already exists');
             return;
         }
@@ -76,8 +76,8 @@ io.on('connection', (socket) => {
 
         players[socket.id].name = room.playerName;
         rooms.push({ name: room.roomName, playerIDs: [socket.id], gameStarted: false, gamePlaying: false, 
-            password: room.password, freeColors: colors.slice() }); // Create the room
-            fireballs[room.roomName] = []; // Create array for fireballs
+            freeColors: colors.slice() }); // Create the room
+        fireballs[room.roomName] = []; // Create array for fireballs
             
         socket.join(room.roomName); // Player joins the new room/lobby
         currentRoom = room.roomName;

@@ -98,15 +98,13 @@ createLobbyForm.addEventListener('submit', (e) => { // Creating a lobby
   e.preventDefault(); 
 
   const roomName = roomNameInput.value;
-  const password = passwordInput.value;
 
   // Send lobby information to the server using Socket.io
-  socket.emit('createRoom', { roomName, password, playerName });
+  socket.emit('createRoom', { roomName, playerName });
 
   openMenu('waitingRoom');
-  // Clear the input fields
+  // Clear the input field
   roomNameInput.value = '';
-  passwordInput.value = '';
 });
 
 
@@ -122,17 +120,14 @@ function refreshLobbies() {
           const nameCell = document.createElement('td');
           const players = document.createElement('td');
           const joinableCell = document.createElement('td');
-          const password = document.createElement('td');
 
           nameCell.textContent = room.name;
           players.textContent = `${room.playerIDs.length}/4`;
           joinableCell.textContent = room.gameStarted ? "No":"Yes";
-          password.textContent = "No";
 
           row.appendChild(nameCell);
           row.appendChild(players);
           row.appendChild(joinableCell);
-          row.appendChild(password);
 
           row.classList.add("lobby")
           row.classList.add("nes-pointer")
