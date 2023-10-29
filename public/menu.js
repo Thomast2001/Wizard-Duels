@@ -76,7 +76,6 @@ function openMenu(menu){
   
 document.querySelector('#chooseName').addEventListener('submit', (e) => {
   e.preventDefault(); 
-  console.log(e)
   playerName = document.querySelector('#nameInput').value;
   openMenu("mainMenu");
 })
@@ -115,7 +114,6 @@ function refreshLobbies() {
       .then(data => {
         roomTableBody.innerHTML = '';
 
-        console.log(data)
         data.forEach(room => {
           const row = document.createElement('tr');
           const nameCell = document.createElement('td');
@@ -168,7 +166,6 @@ function addPlayerToList(playerID, color, name) {
 }
 
 function changePlayerImg(id, color){
-  console.log()
   player = document.getElementById(id);
   playerIcon = player.querySelector('img');
   playerIcon.src = "playerIcons/" + color + "PlayerImg.png";

@@ -61,7 +61,7 @@
   z-index: 2;
   top: 50%;
   left: 50%;
-  height: 45%;
+  height: 41%;
   transform: translate(-50%, -50%);
 }
 
@@ -353,6 +353,10 @@ input[type="range"] {
   flex-direction: row;
 }
 
+#lastShopRow {
+  margin-bottom: 10px;
+}
+
 .shop-item-container {
   display: flex;
   flex-direction: column;
@@ -374,7 +378,8 @@ input[type="range"] {
   justify-content: space-around;
   display: flex;
   align-content: center;
-  margin-top: 5px;
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
 .level-light-green {
@@ -399,8 +404,8 @@ input[type="range"] {
   position: absolute;
   color: yellow;
   font-size: large;
-  right: 3px;
-  bottom: 3px;
+  right: 2px;
+  bottom: 2px;
 }
 
 .tooltip {
@@ -416,7 +421,7 @@ input[type="range"] {
   top:50%;
   left:100%;
   margin-left:20px;
-  transform:translate(0, -40%);
+  transform:translate(0, -30%);
   padding:10px 20px;
   color:#444444;
   background-color:#EEEEEE;

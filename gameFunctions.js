@@ -1,5 +1,5 @@
 function checkPlayerOutsideArena(player) {
-    if (player.x < 270 || player.x > 1520 || player.y < 130 || player.y > 710) {
+    if ((player.x < 270 || player.x > 1520 || player.y < 130 || player.y > 710) && player.health > 0) {
         return true;
     }
 }

@@ -244,5 +244,3 @@ function animate(){
 }
 
 document.onload = animate();
-
-gamePlaying = true;
