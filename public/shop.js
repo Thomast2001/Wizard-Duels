@@ -26,14 +26,11 @@ function upgradePurchased(players, playerID, purchased, abilityCooldowns) {
     players[playerID].levels[purchased] += 1;
     if (playerID == socket.id) {
         const updatedLevel = players[playerID].levels[purchased];
-        console.log(players[playerID].levels, purchased)
         document.querySelector(`#${purchased}Title`).innerText = `${purchased} (${upgrades[purchased].cost[updatedLevel]})`
-        console.log(`#${purchased}Level${updatedLevel}`)
         document.querySelector(`#${purchased}Level${updatedLevel}`).classList.remove("level-light-black");
         document.querySelector(`#${purchased}Level${updatedLevel}`).classList.add("level-light-green");
         if (purchased != 'Health' && purchased != 'Boots') {
             abilityCooldowns[purchased] = upgrades[purchased].cooldown[updatedLevel];
-            console.log(abilityCooldowns)
         }
     }
     if (purchased == 'Health') {

@@ -135,10 +135,6 @@ class Player{
     }
 
     draw() {
-//       ctx.fillStyle = this.color;
-//        ctx.beginPath();
-//        ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
-//        ctx.fill();
         if (this.dead == false) {
             if (this.animationFrame > animationStates[this.animationIndex].frames){
                 this.animationFrame = 0;

@@ -71,10 +71,6 @@ canvas.addEventListener("keydown", (event) => {
                     cooldown(cooldownSeconds, "Lightning", abilityCooldowns.Lightning);
                 }
                 break;
-            case "d":
-                players[socket.id].calcSpeed(players[socket.id].x, players[socket.id].y);
-                // socket.emit("moveClick", {'x': players[socket.id].x, 'y': players[socket.id].y})
-                break;
             default:
                 break;
         }
@@ -116,7 +112,6 @@ socket.on("unready", (id) => {
 socket.on("color", (msg) => {
     changePlayerImg(msg.playerID, msg.color);
     players[msg.playerID].color = msg.color;
-    console.log(players[msg.playerID].color);
 })
 
 socket.on("unreadyAll", (id) => {
@@ -238,7 +233,7 @@ setInterval(() => {
 
 function animate(){
     ctx.drawImage(background, 0, 0);
-    if (gamePlaying == true) { //gamePlaying == true
+    if (gamePlaying == true) { 
         drawLoops(players);
         handleParticles();
         handleExplosionWaves();

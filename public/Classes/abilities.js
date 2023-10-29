@@ -103,7 +103,7 @@ class Lightning {
     }
 
     draw() {
-        ctx.fillStyle = `rgba(255, 255, 255, ${1 * this.framesLeft}%)`; //${25 * this.framesLeft} 
+        ctx.fillStyle = `rgba(255, 255, 255, ${1 * this.framesLeft}%)`;
         ctx.fillRect(0,0,canvas.width, canvas.height);
         ctx.strokeStyle = `rgba(244, 100, 255, ${2 * this.framesLeft}%)`;
         ctx.lineWidth = 4;

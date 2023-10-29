@@ -41,7 +41,6 @@ function playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, playerID, 
 function getWinner(players, room) {
     let winner = null
     room['playerIDs'].forEach(id => {
-        console.log(players[id].health);
         if (players[id].health > 0) {
             winner = id;
         }

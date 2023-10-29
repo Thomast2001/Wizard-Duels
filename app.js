@@ -28,7 +28,6 @@ server.listen(port, () => {
 
 
 io.on('connection', (socket) => {
-    console.log("user con")
     players[socket.id] = new Player('red', `player${Math.floor(Math.random()*10)}`);
     let currentRoom = null;
 
@@ -66,8 +65,6 @@ io.on('connection', (socket) => {
             socket.emit('error', 'Error: Lobby name already exists');
             return;
         }
-        console.log(room.playerName)
-        console.log(players[socket.id].name)
 
         if (!validate.PlayerName(room.playerName)){  // Validate the player name
             socket.emit('error', 'Error: Player name does not meet the requirements');
@@ -112,31 +109,29 @@ io.on('connection', (socket) => {
     socket.on("color", () => {
         const room = rooms[findRoomIndex(rooms, currentRoom)];
         if (currentRoom && !room.gamePlaying) {
-            console.log(room.freeColors);
             room.freeColors.push(players[socket.id].color);
             const newColor = room.freeColors.shift();
-            console.log(room.freeColors);
             players[socket.id].color = newColor;
             io.in(currentRoom).emit("color", {playerID: socket.id, color: newColor})
-            console.log(newColor);
         }
     })
 
     socket.on("leaveLobby", () => {
         if (currentRoom != null) {
             let roomIndex = findRoomIndex(rooms, currentRoom);
+            rooms[roomIndex].freeColors.push(players[socket.id].color);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
             socket.to(currentRoom).emit("playerDisconnect", socket.id);
             currentRoom = null;
+            // reset the player
             players[socket.id].gold = 250;
             players[socket.id].levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
+            players[socket.id].speedTotal = 2
+            players[socket.id].maxHealth = 100
         }
     })
 
     socket.on("shop" , (purchased) => {
-        console.log(purchased)
-        console.log(players[socket.id].gold);
-        console.log(upgrades[purchased].cost);
         const currentLevel = players[socket.id].levels[purchased];
         if (currentRoom != null && players[socket.id].gold >= upgrades[purchased].cost[currentLevel]) {
             if (purchased == 'Health') {
@@ -213,16 +208,13 @@ io.on('connection', (socket) => {
 
 
     socket.on('disconnect', () => {
-        console.log(socket.id)
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
-        delete players[socket.id];
-
         if (currentRoom != null){
             let roomIndex = findRoomIndex(rooms, currentRoom);
+            rooms[roomIndex].freeColors.push(players[socket.id].color);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
         }
-        
-
+        delete players[socket.id];
     });
   });
 
@@ -237,7 +229,6 @@ function findRoomIndex(rooms, name){
 
 let players = {};
 let updatedPlayers = {} // Used for sending player positions and health to connected clients
-//let rooms = [{ name: "room1", playerIDs: [], gameStarted: false }, { name: "room2", playerIDs: [], gameStarted: false }];
 let rooms = [];
 let fireballs = {room1: [], room2: []};
 

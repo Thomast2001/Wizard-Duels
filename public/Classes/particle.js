@@ -68,7 +68,6 @@ class healthChangeNumber {
 
 
   draw(players) {
-    console.log(ctx.font)
     ctx.font = "12px PressStart2P";
     ctx.fillStyle = this.color;
     ctx.strokeStyle = "black";
