@@ -1,4 +1,4 @@
-# Wizard Duels - Multiplayer Game README
+# Wizard Duels - README
 
 ## Introduction
 Welcome to Wizard Duels, a real-time multiplayer game. This README serves as a guide to help you understand the game, and how to set it up to play. Wizard Duels is built using vanilla JavaScript and utilizes Socket.IO for real-time communication between players.
@@ -11,8 +11,7 @@ In Wizard Duels players are able to create and join lobbies to play against each
 ## Features
 - Real-time multiplayer gameplay.
 - Intuitive controls for casting spells and maneuvering.
-- Diverse selection of spells and abilities.
-- Dynamic and immersive magical environments.
+- Server can handle multiple lobbies at once.
 
 ## How to Play
 1. **Setup:**
