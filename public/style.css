@@ -149,6 +149,10 @@ td {
   bottom: 20px;
 }
 
+#addAIButton {
+  position: fixed !important;
+}
+
 .lobby-name{
   white-space: nowrap;
 }

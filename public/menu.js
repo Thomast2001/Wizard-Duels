@@ -6,6 +6,7 @@ const chooseName = document.querySelector("#chooseName");
 const waitingRoom = document.querySelector("#waitingRoom");
 const playerList = document.querySelector("#playerList")
 const readyButton = document.querySelector("#readyButton");
+const addAIButton = document.querySelector("#addAIButton");
 const disconnectButton = document.querySelector("#disconnectButton");
 const leaveGameDiv = document.querySelector("#leaveGameDiv")
 const errorPopupDiv = document.querySelector("#errorPopup");
@@ -23,6 +24,10 @@ readyButton.addEventListener("click", () => {
     readyButton.textContent = "Unready";
     players[socket.id].ready = true;
   }
+})
+
+addAIButton.addEventListener("click", () => {
+  socket.emit("addAI");
 })
 
 document.querySelector("#refreshButton").addEventListener("click", refreshLobbies);

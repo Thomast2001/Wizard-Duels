@@ -1,5 +1,5 @@
 const Player = require('./serverClasses/player');
-const A = require('./serverClasses/abilities');
+const AI = require('./serverClasses/AI');
 const validate = require('./validate.js');
 const roomFunctions = require('./roomFunctions.js');
 const gameFunctions = require('./gameFunctions.js');
@@ -28,7 +28,7 @@ server.listen(port, () => {
 
 
 io.on('connection', (socket) => {
-    players[socket.id] = new Player('red', `player${Math.floor(Math.random()*10)}`);
+    players[socket.id] = new Player('red', `player${Math.floor(Math.random()*10)}`, socket.id); // Create a new player object
     let currentRoom = null;
 
         /////////////////////////////////
@@ -57,6 +57,20 @@ io.on('connection', (socket) => {
             socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
         } else {
             socket.emit('error', 'Game already started or does not exist');
+        }
+    })
+
+    socket.on("addAI", () => {
+        if (currentRoom != null) {
+            const id = (Math.random() + 1).toString(36).substring(6) // Generate a random id for the AI
+            let roomIndex = findRoomIndex(rooms, currentRoom); // Find the room of the player
+            rooms[roomIndex].playerIDs.push(id);
+            console.log(currentRoom)
+            players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'AI', id, 1, currentRoom);
+            io.to(currentRoom).emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name});  // send the new player to all other clients
+            io.to(currentRoom).emit("ready", id);
+            players[id].makePurchases(io, players, id, rooms[roomIndex].playerIDs);
+            players[id].ready = true;
         }
     })
 
@@ -132,18 +146,8 @@ io.on('connection', (socket) => {
     })
 
     socket.on("shop" , (purchased) => {
-        const currentLevel = players[socket.id].levels[purchased];
-        if (currentRoom != null && players[socket.id].gold >= upgrades[purchased].cost[currentLevel]) {
-            if (purchased == 'Health') {
-                players[socket.id].maxHealth += 20;
-            } else if (purchased == 'Boots') {
-                players[socket.id].speedTotal += 0.25;
-            }
-            players[socket.id].gold -= upgrades[purchased].cost[currentLevel];
-            players[socket.id].levels[purchased] += 1;
-            socket.emit("updateGold", players[socket.id].gold);
-            io.in(currentRoom).emit("upgradePurchased", ({'playerID': socket.id, 'purchased': purchased})); // Send the upgrade to all clients
-        }
+        roomFunctions.purchase(io, players[socket.id], socket.id, upgrades, purchased, currentRoom);
+        socket.emit("updateGold", players[socket.id].gold);
     });
 
         /////////////////////////////////
@@ -158,52 +162,20 @@ io.on('connection', (socket) => {
     })
 
     socket.on('fireball', targetPos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['fireball'] && players[socket.id].levels.Fireball > 0) {
-            const fireballLevel = players[socket.id].levels.Fireball;
-            fireballs[currentRoom].push(new A.Fireball(players[socket.id].x, players[socket.id].y, 
-                        targetPos.x, targetPos.y, socket.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
-
-            socket.to(currentRoom).emit('fireball', {'x': players[socket.id].x, 'y': players[socket.id].y,
-                            'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': socket.id})
-            players[socket.id].cooldown('fireball', 950);
-        }
+        gameFunctions.fireball(players[socket.id], socket.id, socket, currentRoom, targetPos, fireballs, upgrades);
     })
     
     socket.on('airwave', () => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['airwave'] && players[socket.id].levels.Airwave > 0) {
-            io.to(currentRoom).emit('airwave', socket.id);
-            const airwaveLevel = players[socket.id].levels.Airwave;
-            const pushMultiplier = upgrades.Airwave.pushMultiplier[airwaveLevel]
-            const cooldown = upgrades.Airwave.cooldown[airwaveLevel] * 1000;
-            A.airwave(players, socket.id, rooms[findRoomIndex(rooms, currentRoom)].playerIDs, pushMultiplier);
-            players[socket.id].cooldown('airwave', cooldown - 50);
-        }
+        playerIDs = rooms[findRoomIndex(rooms, currentRoom)].playerIDs;
+        gameFunctions.airwave(socket.id, io, currentRoom, players, upgrades, playerIDs);
     }) 
 
     socket.on('teleport', pos => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                        && !players[socket.id].onCooldown['teleport'] && players[socket.id].levels.Teleport > 0) {
-            players[socket.id].calcSpeed(pos.x, pos.y);
-            A.teleport(players[socket.id], pos, upgrades);
-            socket.to(currentRoom).emit('teleport', {'playerID': socket.id, 'pos': pos})
-            players[socket.id].cooldown('teleport', 7450);
-        }
+        gameFunctions.teleport(players[socket.id], socket.id, socket, currentRoom, pos, upgrades);
     })
 
     socket.on('lightning', (lightning) => {
-        if (players[socket.id].health > 0 && !players[socket.id].stunned 
-                && !players[socket.id].onCooldown['lightning'] && players[socket.id].levels.Lightning > 0) {
-            const lightningLevel = players[socket.id].levels.Lightning;
-            const cooldown = upgrades.Lightning.cooldown[lightningLevel] * 1000;
-            if (lightning.playerHit) {
-                players[lightning.playerHit].health -= upgrades.Lightning.damage[lightningLevel];
-                players[lightning.playerHit].stun(1500, players, lightning.playerHit); // Stun the player hit
-            }
-            socket.to(currentRoom).emit('lightning', lightning)
-            players[socket.id].cooldown('lightning', cooldown - 50);
-        }
+        gameFunctions.lightning(players[socket.id], socket, currentRoom, players, upgrades, lightning);
     });
 
 
@@ -230,13 +202,13 @@ function findRoomIndex(rooms, name){
 let players = {};
 let updatedPlayers = {} // Used for sending player positions and health to connected clients
 let rooms = [];
-let fireballs = {room1: [], room2: []};
+let fireballs = {};
 
 
 let updateInterval = setInterval(() => {
     rooms.forEach(room => {
         if (room.gamePlaying) {
-            if (roomFunctions.allPlayersDead(players, room)) {// If only 1 player is alive, end the game
+            if (roomFunctions.allPlayersDead(players, room)) { // If only 1 player is alive, end the game
                 const winner = roomFunctions.getWinner(players, room);
                 players[winner].wins++;
                 if (players[winner].wins >= 5) {
@@ -261,12 +233,17 @@ let updateInterval = setInterval(() => {
 
 }, 15);
 
-let lavaDamageInterval = setInterval(() => {
+
+let lavaDamageAndAiInterval = setInterval(() => {
     rooms.forEach(room => {
         if (room.gamePlaying) {
             room.playerIDs.forEach(id => {
-                if (gameFunctions.checkPlayerOutsideArena(players[id])){
-                    players[id].health--;
+                const player = players[id];
+                if (gameFunctions.checkPlayerOutsideArena(player)){
+                    player.health--;
+                }
+                if (player.isAI == true && player.health > 0) {
+                    player.tick(io, players, fireballs, room.playerIDs);
                 }
             });
         }

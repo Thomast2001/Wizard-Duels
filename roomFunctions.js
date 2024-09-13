@@ -64,6 +64,32 @@ function endRound(io, players, winner, room) {
     room.gamePlaying = false;
     unreadyAllPlayers(io, room, players);
     updateGold(io, players, winner, room.playerIDs);
+    readyAI(io, room, players, room.playerIDs);
 }
 
-module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby, getWinner, endRound }
+function readyAI(io, room, players, playerIDs){
+    playerIDs.forEach(id => {
+        if (players[id].isAI) {
+            console.log("AI ready")
+            players[id].makePurchases(io, players, id, playerIDs);
+            players[id].ready = true;
+            io.to(room.name).emit("ready", playerIDs);
+        }
+    });
+}
+
+function purchase(io, player, id, upgrades, purchased, currentRoom) {
+    const currentLevel = player.levels[purchased];
+    if (currentRoom != null && player.gold >= upgrades[purchased].cost[currentLevel]) {
+        if (purchased == 'Health') {
+            player.maxHealth += 20;
+        } else if (purchased == 'Boots') {
+            player.speedTotal += 0.25;
+        }
+        player.gold -= upgrades[purchased].cost[currentLevel];
+        player.levels[purchased] += 1;
+        console.log("Player " + id + " purchased " + purchased + " at level " + player.levels[purchased]);
+        io.in(currentRoom).emit("upgradePurchased", ({'playerID': id, 'purchased': purchased})); // Send the upgrade to all clients
+    }
+}
+module.exports = { allPlayersReady, allPlayersDead, unreadyAllPlayers, playerLeaveLobby, getWinner, endRound, purchase }
