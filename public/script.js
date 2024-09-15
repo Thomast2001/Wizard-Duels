@@ -95,7 +95,7 @@ socket.on("newPlayer", (newPlayer) => {
     addPlayerToList(newPlayer.id, newPlayer.color, newPlayer.name);
     players[newPlayer.id] = new Player(newPlayer.color, newPlayer.name)
 
-    for (const [key, value] of Object.entries(obj)) { // Set the levels of the new player
+    for (const [key, value] of Object.entries(newPlayer['levels'])) { // Set the levels of the new player
         players[newPlayer.id].levels[key] = value;
         if (key == 'Health') {
             players[newPlayer.id].maxHealth += 20 * value;
@@ -106,16 +106,16 @@ socket.on("newPlayer", (newPlayer) => {
 })
 
 socket.on("playerDisconnect", (playerId) => {
-    document.getElementById(playerId).remove();
+    document.getElementById(`p${playerId}`).remove();
     delete players[playerId];
 })
 
 socket.on("ready", (id) => {
-    document.getElementById(id).style.backgroundColor = "rgba(4, 255, 63, 0.7)";
+    document.getElementById(`p${id}`).style.backgroundColor = "rgba(4, 255, 63, 0.7)";
 })
 
 socket.on("unready", (id) => {
-    document.getElementById(id).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
+    document.getElementById(`p${id}`).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
 })
 
 socket.on("color", (msg) => {
@@ -123,9 +123,9 @@ socket.on("color", (msg) => {
     players[msg.playerID].color = msg.color;
 })
 
-socket.on("unreadyAll", (id) => {
+socket.on("unreadyAll", () => {
     for (let playerID in players) {
-        document.getElementById(playerID).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
+        document.getElementById(`p${playerID}`).style.backgroundColor = "rgba(255, 8, 0, 0.7)";
         players[playerID].ready = false;
     }
     readyButton.classList.remove("is-error");

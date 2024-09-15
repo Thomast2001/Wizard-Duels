@@ -34,7 +34,7 @@ function playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, playerID, 
     // Sum up all ais in the room
     playerCount = 0;
     rooms[roomIndex]?.playerIDs.forEach(id => { if (!players[id].isAI) playerCount++; }); // Count players excluding AI
-    if (playerCount === playerCount) { // if the room is empty after disconnect the room is removed
+    if (playerCount == 0) { // if the room is empty after disconnect the room is removed
         rooms.splice(roomIndex, 1);
         delete fireballs[currentRoom];
     } else if (!currentRoom.gamePlaying) {

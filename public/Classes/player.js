@@ -3,7 +3,7 @@ let spriteSheets = {}
 
 colors.forEach(color => {
     spriteSheets[color] = new Image();
-    spriteSheets[color].src = `${window.location.href}spriteSheets/${color}SpriteSheet.PNG`;
+    spriteSheets[color].src = `${window.location.href}spriteSheets/${color}SpriteSheet.png`;
 });
 
 

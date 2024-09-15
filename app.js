@@ -51,6 +51,7 @@ io.on('connection', (socket) => {
             const player = players[socket.id];
             player.color = rooms[roomIndex]?.freeColors.shift();
             player.name = joined.playerName;
+            roomFunctions.unreadyAllPlayers(io, rooms[roomIndex], players);
             rooms[roomIndex]?.playerIDs.forEach(id => {  // Send all the existing players to the new player
                 socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name, 'levels': players[id].levels}); 
             })
@@ -94,21 +95,21 @@ io.on('connection', (socket) => {
             freeColors: colors.slice() }); // Create the room
         fireballs[room.roomName] = []; // Create array for fireballs
             
-        socket.join(room.roomName); // Player joins the new room/lobby
-        currentRoom = room.roomName;
+        socket.join(room?.roomName); // Player joins the new room/lobby
+        currentRoom = room?.roomName;
         
         const createdRoom = rooms[findRoomIndex(rooms, currentRoom)];
-        players[socket.id].color = createdRoom.freeColors.shift();
+        players[socket.id].color = createdRoom?.freeColors.shift();
         socket.emit("newPlayer", { 'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name }); 
     })
 
     socket.on("ready", () => {
         let room = rooms[findRoomIndex(rooms, currentRoom)];
-        if (!room.gamePlaying) {
+        if (!room?.gamePlaying) {
             players[socket.id].ready = true;
             io.in(currentRoom).emit("ready", socket.id);
-            if (roomFunctions.allPlayersReady(players, room.playerIDs)){
-                gameFunctions.resetPlayers(io, currentRoom, players, room.playerIDs)
+            if (roomFunctions.allPlayersReady(players, room?.playerIDs)){
+                gameFunctions.resetPlayers(io, currentRoom, players, room?.playerIDs)
                 room.gamePlaying = true;
                 room.gameStarted = true;
                 io.in(currentRoom).emit("startGame"); // Start the game if all players are ready
@@ -126,9 +127,9 @@ io.on('connection', (socket) => {
 
     socket.on("color", () => {
         const room = rooms[findRoomIndex(rooms, currentRoom)];
-        if (currentRoom && !room.gamePlaying) {
-            room.freeColors.push(players[socket.id].color);
-            const newColor = room.freeColors.shift();
+        if (currentRoom && !room?.gamePlaying) {
+            room?.freeColors.push(players[socket.id].color);
+            const newColor = room?.freeColors.shift();
             players[socket.id].color = newColor;
             io.in(currentRoom).emit("color", {playerID: socket.id, color: newColor})
         }
@@ -196,7 +197,7 @@ io.on('connection', (socket) => {
 
 
 function findRoomIndex(rooms, name){
-    return rooms.findIndex(room => room.name === name);
+    return rooms.findIndex(room => room?.name === name);
 }
 
         ////////////////////////////////////////
@@ -211,25 +212,25 @@ let fireballs = {};
 
 let updateInterval = setInterval(() => {
     rooms.forEach(room => {
-        if (room.gamePlaying) {
+        if (room?.gamePlaying) {
             if (roomFunctions.allPlayersDead(players, room)) { // If only 1 player is alive, end the game
                 const winner = roomFunctions.getWinner(players, room);
                 players[winner].wins++;
                 if (players[winner].wins >= 5) {
-                    io.in(room.name).emit("gameOver", (players[winner].name));
-                    rooms.splice(findRoomIndex(rooms, room.name), 1);
+                    io.in(room?.name).emit("gameOver", (players[winner].name));
+                    rooms.splice(findRoomIndex(rooms, room?.name), 1);
                 } else {
                     roomFunctions.endRound(io, players, winner, room)
                 }
             }
             updatedPlayers = {};
-            room.playerIDs.forEach(id => {
+            room?.playerIDs.forEach(id => {
                 players[id].move();
                 updatedPlayers[id] = {'x': players[id].x, 'y': players[id].y, 'health': players[id].health};
             });
-            io.to(room.name).emit("updatePlayers", updatedPlayers);
+            io.to(room?.name).emit("updatePlayers", updatedPlayers);
             
-            fireballs[room.name].forEach((fireball, index) => {
+            fireballs[room?.name].forEach((fireball, index) => {
                 fireball.move();
                 fireball.collisionCheck(index, fireballs, players, room)
             })
@@ -241,14 +242,14 @@ let updateInterval = setInterval(() => {
 
 let lavaDamageAndAiInterval = setInterval(() => {
     rooms.forEach(room => {
-        if (room.gamePlaying) {
-            room.playerIDs.forEach(id => {
+        if (room?.gamePlaying) {
+            room?.playerIDs.forEach(id => {
                 const player = players[id];
                 if (gameFunctions.checkPlayerOutsideArena(player)){
                     player.health--;
                 }
                 if (player.isAI == true && player.health > 0) {
-                    player.tick(io, players, fireballs, room.playerIDs);
+                    player.tick(io, players, fireballs, room?.playerIDs);
                 }
             });
         }

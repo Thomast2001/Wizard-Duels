@@ -37,7 +37,7 @@ function fireball(player, id, socket, currentRoom, targetPos, fireballs, upgrade
     if (player.health > 0 && !player.stunned 
                     && !player.onCooldown['fireball'] && player.levels.Fireball > 0) {
         const fireballLevel = player.levels.Fireball;
-        fireballs[currentRoom].push(new A.Fireball(player.x, player.y, 
+        fireballs[currentRoom]?.push(new A.Fireball(player.x, player.y, 
                     targetPos.x, targetPos.y, id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
 
         socket.to(currentRoom).emit('fireball', {'x': player.x, 'y': player.y,
