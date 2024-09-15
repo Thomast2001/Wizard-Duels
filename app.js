@@ -43,15 +43,15 @@ io.on('connection', (socket) => {
 
         let roomJoined = joined.room
         let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
-        if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex].gameStarted 
-                    && rooms[roomIndex].playerIDs.length < 9) { // Check if room exists and player is not already in room 
-            rooms[roomIndex].playerIDs.push(socket.id);
+        if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex]?.gameStarted 
+                    && rooms[roomIndex]?.playerIDs.length < 8) { // Check if room exists and player is not already in room 
+            rooms[roomIndex]?.playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
             const player = players[socket.id];
-            player.color = rooms[roomIndex].freeColors.shift();
+            player.color = rooms[roomIndex]?.freeColors.shift();
             player.name = joined.playerName;
-            rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
+            rooms[roomIndex]?.playerIDs.forEach(id => {  // Send all the existing players to the new player
                 socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name, 'levels': players[id].levels}); 
             })
 
@@ -62,19 +62,18 @@ io.on('connection', (socket) => {
     })
 
     socket.on("addAI", (difficulty) => {
-        if (currentRoom != null) {
+        const roomIndex = findRoomIndex(rooms, currentRoom); // Find the room of the player
+        if (currentRoom != null && rooms[roomIndex]?.playerIDs.length < 8) {
             const id = (Math.random() + 1).toString(36).substring(6) // Generate a random id for the AI
-            let roomIndex = findRoomIndex(rooms, currentRoom); // Find the room of the player
-            rooms[roomIndex].playerIDs.push(id);
-            console.log(currentRoom)
+            rooms[roomIndex]?.playerIDs.push(id);
             if (difficulty == 0) { // add normal AI
-                players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'AI', id, 0, currentRoom);
+                players[id] = new AI(rooms[roomIndex]?.freeColors.shift(), 'AI', id, 0, currentRoom);
             } else { // add unfair AI
-                players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'Dawg', id, 1, currentRoom);
+                players[id] = new AI(rooms[roomIndex]?.freeColors.shift(), 'Dawg', id, 1, currentRoom);
             }
             io.to(currentRoom).emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name});  // send the new player to all other clients
             io.to(currentRoom).emit("ready", id);
-            players[id].makePurchases(io, players, id, rooms[roomIndex].playerIDs);
+            players[id].makePurchases(io, players, id, rooms[roomIndex]?.playerIDs);
             players[id].ready = true;
         }
     })
@@ -119,7 +118,7 @@ io.on('connection', (socket) => {
 
     socket.on("unready", () => {
         let room = rooms[findRoomIndex(rooms, currentRoom)];
-        if (!room.gamePlaying) {
+        if (!room?.gamePlaying) {
             players[socket.id].ready = false;
             io.in(currentRoom).emit("unready", socket.id);
         }
@@ -138,7 +137,7 @@ io.on('connection', (socket) => {
     socket.on("leaveLobby", () => {
         if (currentRoom != null && rooms[findRoomIndex(rooms, currentRoom)]) {
             let roomIndex = findRoomIndex(rooms, currentRoom);
-            rooms[roomIndex].freeColors.push(players[socket.id].color);
+            rooms[roomIndex]?.freeColors.push(players[socket.id].color);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
             socket.to(currentRoom).emit("playerDisconnect", socket.id);
             currentRoom = null;

@@ -29,7 +29,6 @@ class AI extends Player {
         }
         this.moveCooldown -= 1;
         if (!this.onCooldown['fireball']) {
-            console.log('fireball');
             if (this.difficulty == 0) {
                 this.fireball(io, fireballs, players, playerIDs);
             } else {
@@ -66,7 +65,6 @@ class AI extends Player {
                 targetCords.x += target.speedX * 50;
                 targetCords.y += target.speedY * 50;
             }
-            console.log('target cords', targetCords);
             gameFunctions.fireball(this, this.id, io, this.room, targetCords, fireballs, upgrades);
         }
     }
@@ -83,8 +81,6 @@ class AI extends Player {
                     targetCords.x += target.speedX * 50;
                     targetCords.y += target.speedY * 50;
                 }
-                console.log('target cords', targetCords);
-                
                 const fireballLevel = this.levels.Fireball;
                 fireballs[this.room].push(new A.Fireball(this.x, this.y, 
                             targetCords.x, targetCords.y, this.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));

@@ -145,7 +145,7 @@ function refreshLobbies() {
           const joinableCell = document.createElement('td');
 
           nameCell.textContent = room.name;
-          players.textContent = `${room.playerIDs.length}/4`;
+          players.textContent = `${room.playerIDs.length}/8`;
           joinableCell.textContent = room.gameStarted ? "No":"Yes";
 
           row.appendChild(nameCell);
@@ -175,7 +175,7 @@ function addPlayerToList(playerID, color, name) {
     const playerName = document.createElement('h1');
     const playerImage = document.createElement('img');
 
-    player.setAttribute("id", playerID)
+    player.setAttribute("id", `p${playerID}`); //added p since id can't start with a number
     player.classList.add("player-li");
     playerName.classList.add("player-name");
     playerImage.classList.add("player-image");
@@ -190,7 +190,7 @@ function addPlayerToList(playerID, color, name) {
 }
 
 function changePlayerImg(id, color){
-  player = document.getElementById(id);
+  player = document.getElementById(`p${id}`);
   playerIcon = player.querySelector('img');
   playerIcon.src = "playerIcons/" + color + "PlayerImg.png";
 }

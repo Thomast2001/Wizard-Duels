@@ -4,7 +4,7 @@
 Welcome to Wizard Duels, a real-time multiplayer game. This README serves as a guide to help you understand the game, and how to set it up to play. Wizard Duels is built using vanilla JavaScript and utilizes Socket.IO for real-time communication between players.
 
 ## Game Overview
-In Wizard Duels players are able to create and join lobbies to play against each other. Each player controls a wizard and can cast spells to attack their opponent, the last one alive wins the round. The goal of the game is to win 5 rounds. Between each round the game features a shop in which players can buy spells and abilities to use in the game. 
+In Wizard Duels players are able to create and join lobbies to play against each other. Each player controls a wizard and can cast spells to attack their opponent, the last one alive wins the round. The goal of the game is to win 5 rounds. Between each round the game features a shop in which players can buy spells and abilities to use in the game. The game also features AI bots with two difficulty levels.
 
 ![](https://github.com/Thomast2001/Wizard-Duels/blob/main/gifs/menu.gif)
 
@@ -12,6 +12,7 @@ In Wizard Duels players are able to create and join lobbies to play against each
 - Real-time multiplayer gameplay.
 - Intuitive controls for casting spells and maneuvering.
 - Server can handle multiple lobbies at once.
+- AI bots to play against.
 
 ## How to Play
 1. **Setup:**

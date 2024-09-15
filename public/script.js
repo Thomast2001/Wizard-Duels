@@ -4,7 +4,6 @@ canvas.width = 1800;
 canvas.height = 900;
 ctx.font = "12px PressStart2P";
 let socket = io();
-console.log(window.location.href);
 background = new Image();
 background.src = window.location.href + "Arena.png";
 
@@ -155,7 +154,7 @@ socket.on("endGame", (winnerID) => {
     if (winnerID != null) {
         const trophyElement = document.createElement('i');
         trophyElement.className = 'nes-icon trophy is-small';
-        document.querySelector(`#${winnerID}`).appendChild(trophyElement);
+        document.querySelector(`#p${winnerID}`).appendChild(trophyElement);
     }
     setTimeout(() => {
         for (let playerID in players) {
@@ -165,6 +164,9 @@ socket.on("endGame", (winnerID) => {
         document.querySelector("#game_menu").style.display = "block"
         document.querySelector("#hud").style.display = "none"
     }, 2000);
+    readyButton.classList.remove("is-error");
+    readyButton.textContent = "Ready up!";
+    players[socket.id].ready = false;
 })
 
 socket.on("gameOver", (winnerName) => {

@@ -29,13 +29,12 @@ function unreadyAllPlayers(io, room, players) {
 }
 
 function playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, playerID, fireballs) {
-    let playerIndex = rooms[roomIndex].playerIDs.indexOf(playerID); 
-    rooms[roomIndex].playerIDs.splice(playerIndex, 1); // Remove playerID from the room
-    //sum up all ais in the room
+    let playerIndex = rooms[roomIndex]?.playerIDs.indexOf(playerID); 
+    rooms[roomIndex]?.playerIDs.splice(playerIndex, 1); // Remove playerID from the room
+    // Sum up all ais in the room
     playerCount = 0;
-    rooms[roomIndex].playerIDs.forEach(id => { if (!players[id].isAI) playerCount++; }); // Count players excluding AI
-    
-    if (rooms[roomIndex].playerIDs.length === playerCount) { // if the room is empty after disconnect the room is removed
+    rooms[roomIndex]?.playerIDs.forEach(id => { if (!players[id].isAI) playerCount++; }); // Count players excluding AI
+    if (playerCount === playerCount) { // if the room is empty after disconnect the room is removed
         rooms.splice(roomIndex, 1);
         delete fireballs[currentRoom];
     } else if (!currentRoom.gamePlaying) {
@@ -56,9 +55,9 @@ function getWinner(players, room) {
 function updateGold(io, players, winner, playerIDs){
     playerIDs.forEach(id => {
         if (id == winner) {
-            players[id].gold += 400;
+            players[id].gold += 350;
         } else {
-            players[id].gold += 300;
+            players[id].gold += 450;
         }
         io.to(id).emit("updateGold", players[id].gold);
     });
@@ -75,7 +74,6 @@ function endRound(io, players, winner, room) {
 function readyAI(io, room, players, playerIDs){
     playerIDs.forEach(id => {
         if (players[id].isAI) {
-            console.log("AI ready")
             players[id].makePurchases(io, players, id, playerIDs);
             players[id].ready = true;
             io.to(room.name).emit("ready", playerIDs);
@@ -93,7 +91,6 @@ function purchase(io, player, id, upgrades, purchased, currentRoom) {
         }
         player.gold -= upgrades[purchased].cost[currentLevel];
         player.levels[purchased] += 1;
-        console.log("Player " + id + " purchased " + purchased + " at level " + player.levels[purchased]);
         io.in(currentRoom).emit("upgradePurchased", ({'playerID': id, 'purchased': purchased})); // Send the upgrade to all clients
     }
 }

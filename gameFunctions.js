@@ -76,7 +76,6 @@ function teleport(player, id, socket, currentRoom, pos, upgrades) {
 }
 
 function lightning(player, socket, currentRoom, players, upgrades, lightning) {
-    console.log(lightning)
     if (player.health > 0 && !player.stunned 
             && !player.onCooldown['lightning'] && player.levels.Lightning > 0) {
         const lightningLevel = player.levels.Lightning;

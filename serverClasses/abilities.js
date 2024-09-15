@@ -13,7 +13,7 @@ class Fireball{
     }
 
     collisionCheck(index, fireballs, players, room) {
-        if (this.x < 0 || this.x > 2000 || this.y < 0 || this.y > 2000){
+        if (this.x < 0 || this.x > 1800 || this.y < 0 || this.y > 900){
                 fireballs[room.name].splice(index,1);
                 return;
         }
