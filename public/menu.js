@@ -11,6 +11,10 @@ const disconnectButton = document.querySelector("#disconnectButton");
 const leaveGameDiv = document.querySelector("#leaveGameDiv")
 const errorPopupDiv = document.querySelector("#errorPopup");
 const options = document.querySelector("#options")
+const addAIDiv = document.querySelector("#addAIDiv")
+const cancelAddAI = document.querySelector("#cancelAddAI")
+const addNormalAI = document.querySelector("#addNormalAI")
+const addUnfairAI = document.querySelector("#addUnfairAI")
 
 readyButton.addEventListener("click", () => {
   if(players[socket.id].ready){
@@ -27,7 +31,21 @@ readyButton.addEventListener("click", () => {
 })
 
 addAIButton.addEventListener("click", () => {
-  socket.emit("addAI");
+  addAIDiv.style.display = "block";
+})
+
+cancelAddAI.addEventListener("click", () => {
+  addAIDiv.style.display = "none";
+})
+
+addNormalAI.addEventListener("click", () => {
+  socket.emit("addAI", 0);
+  addAIDiv.style.display = "none";
+})
+
+addUnfairAI.addEventListener("click", () => {
+  socket.emit("addAI", 1);
+  addAIDiv.style.display = "none";
 })
 
 document.querySelector("#refreshButton").addEventListener("click", refreshLobbies);
@@ -38,9 +56,9 @@ document.body.addEventListener('keydown', event => {
     let menu = document.querySelector("#game_menu");
     if (menu.style.display === "none") {
         menu.style.display = "block";
-      } else {
+    } else {
         menu.style.display = "none";
-      }
+    }
     }
 })
 
@@ -52,6 +70,7 @@ function openMenu(menu){
   leaveGameDiv.style.display = 'none';
   errorPopupDiv.style.display = 'none';
   options.style.display = 'none';
+  addAIDiv.style.display = 'none';
 
   switch (menu) {
     case "mainMenu":

@@ -2,6 +2,7 @@ const Player = require('./player');
 const gameFunctions = require('./../gameFunctions.js');
 const upgrades = require('./../public/upgrades.json');
 const roomFunctions = require('./../roomFunctions.js');
+const A = require('./abilities.js') 
 
 class AI extends Player {
     constructor(color, name, id, difficulty, room) {
@@ -29,7 +30,11 @@ class AI extends Player {
         this.moveCooldown -= 1;
         if (!this.onCooldown['fireball']) {
             console.log('fireball');
-            this.fireball(io, fireballs, players, playerIDs);
+            if (this.difficulty == 0) {
+                this.fireball(io, fireballs, players, playerIDs);
+            } else {
+                this.unfairFireball(io, fireballs, players, playerIDs)
+            }
         }
 
         if (!this.onCooldown['airwave'] && this.levels.Airwave > 0 && this.enemyTarget) {
@@ -57,9 +62,37 @@ class AI extends Player {
                 'x': target.x + Math.random()*this.spread-this.spread/2, 
                 'y': target.y + Math.random()*this.spread-this.spread/2
             };
+            if (Math.random() < 0.5) { // 50% change to target the direction the player is running
+                targetCords.x += target.speedX * 50;
+                targetCords.y += target.speedY * 50;
+            }
             console.log('target cords', targetCords);
             gameFunctions.fireball(this, this.id, io, this.room, targetCords, fireballs, upgrades);
         }
+    }
+
+    unfairFireball(io, fireballs, players, playerIDs) {
+        const target = this.getNearestEnemy(players, playerIDs);
+        for (let i = 0; i < 3; i++) { // fire 3 fireballs at a time
+            if (target) {
+                const targetCords = {
+                    'x': target.x + Math.random()*this.spread*2.5-this.spread, 
+                    'y': target.y + Math.random()*this.spread*2.5-this.spread
+                };
+                if (Math.random() < 0.5) { 
+                    targetCords.x += target.speedX * 50;
+                    targetCords.y += target.speedY * 50;
+                }
+                console.log('target cords', targetCords);
+                
+                const fireballLevel = this.levels.Fireball;
+                fireballs[this.room].push(new A.Fireball(this.x, this.y, 
+                            targetCords.x, targetCords.y, this.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
+                io.to(this.room).emit('fireball', {'x': this.x, 'y': this.y,
+                                'targetPosX': targetCords.x, 'targetPosY':targetCords.y, 'playerID': this.id})
+            }
+        }
+        this.cooldown('fireball', 1200);
     }
 
     teleportWaveCombo(io) {

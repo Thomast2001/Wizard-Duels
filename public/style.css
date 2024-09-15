@@ -149,8 +149,16 @@ td {
   bottom: 20px;
 }
 
-#addAIButton {
+.addAIButtons {
   position: fixed !important;
+}
+
+#addAIDiv {
+  display: none;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: center;
+  background-color: rgba(0, 179, 170, 0.753);
 }
 
 .lobby-name{

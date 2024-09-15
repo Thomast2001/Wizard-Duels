@@ -66,7 +66,10 @@ function teleport(player, id, socket, currentRoom, pos, upgrades) {
         player.calcSpeed(pos.x, pos.y);
         A.teleport(player, pos, upgrades);
         const teleportLevel = player.levels.Teleport;
-        const cooldown = upgrades.Teleport.cooldown[teleportLevel] * 1000;
+        let cooldown = upgrades.Teleport.cooldown[teleportLevel] * 1000;
+        if (player.isAI && player.difficulty == 1) { // Unfair AI gets a 50% cooldown reduction on teleport
+            cooldown *= 0.5;
+        }
         socket.to(currentRoom).emit('teleport', {'playerID': id, 'pos': pos})
         player.cooldown('teleport', cooldown - 50);
     }

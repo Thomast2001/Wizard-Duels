@@ -36,8 +36,9 @@ canvas.addEventListener("keydown", (event) => {
                 if (!cooldownSeconds.Fireball && players[socket.id].levels.Fireball > 0) {
                     socket.emit('fireball', mouse);
                     playSound(attackSounds);
-                    fireballs.push(new Fireball(players[socket.id].x, players[socket.id].y, 
-                                        mouse.x, mouse.y, socket.id, players[socket.id].levels.Fireball));
+                    const fireball = new Fireball(players[socket.id].x, players[socket.id].y, 
+                                mouse.x, mouse.y, socket.id, players[socket.id].levels.Fireball)
+                    fireballs.push(fireball);
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
                     cooldown(cooldownSeconds, "Fireball", abilityCooldowns.Fireball);
@@ -94,6 +95,15 @@ canvas.addEventListener("click", (event) => {
 socket.on("newPlayer", (newPlayer) => {
     addPlayerToList(newPlayer.id, newPlayer.color, newPlayer.name);
     players[newPlayer.id] = new Player(newPlayer.color, newPlayer.name)
+
+    for (const [key, value] of Object.entries(obj)) { // Set the levels of the new player
+        players[newPlayer.id].levels[key] = value;
+        if (key == 'Health') {
+            players[newPlayer.id].maxHealth += 20 * value;
+        } else if (key == 'Boots') {
+            players[newPlayer.id].speedTotal += 0.25 * value;
+        }
+    }
 })
 
 socket.on("playerDisconnect", (playerId) => {
@@ -147,10 +157,10 @@ socket.on("endGame", (winnerID) => {
         trophyElement.className = 'nes-icon trophy is-small';
         document.querySelector(`#${winnerID}`).appendChild(trophyElement);
     }
-    for (let playerID in players) {
-        players[playerID].dead = false;
-    }
     setTimeout(() => {
+        for (let playerID in players) {
+            players[playerID].dead = false;
+        }
         gamePlaying = false;
         document.querySelector("#game_menu").style.display = "block"
         document.querySelector("#hud").style.display = "none"
@@ -190,7 +200,8 @@ socket.on("move", (playerMove) => {
 
 socket.on("fireball", (fb) => {
     playSound(attackSounds);
-    fireballs.push(new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID, players[fb.playerID].levels.Fireball));
+    const fireball = new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID, players[fb.playerID].levels.Fireball)
+    fireballs.push(fireball);
     players[fb.playerID].changeOrientation(fb.targetPosX - players[fb.playerID].x);
     players[fb.playerID].changeAnimationState("attack");
 });

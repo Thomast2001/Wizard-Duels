@@ -1,4 +1,4 @@
-colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple'];
+colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple', 'white'];
 let spriteSheets = {}
 
 colors.forEach(color => {

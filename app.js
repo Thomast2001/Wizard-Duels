@@ -14,7 +14,7 @@ const upgrades = require('./public/upgrades.json');
 
 const port = 3000
 
-const colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple'];
+const colors = ['red', 'green', 'blue', 'cyan', 'black', 'pink', 'purple', 'white'];
 
 app.use(express.static('public'))
 
@@ -43,30 +43,35 @@ io.on('connection', (socket) => {
 
         let roomJoined = joined.room
         let roomIndex = findRoomIndex(rooms, roomJoined) // Find the index of the room in the "rooms" array
-        if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex].gameStarted) { // Check if room exists and player is not already in room 
+        if (rooms[roomIndex] && currentRoom == null && !rooms[roomIndex].gameStarted 
+                    && rooms[roomIndex].playerIDs.length < 9) { // Check if room exists and player is not already in room 
             rooms[roomIndex].playerIDs.push(socket.id);
             currentRoom = roomJoined;
             socket.join(roomJoined);
-            players[socket.id].color = rooms[roomIndex].freeColors.shift();
-
-            players[socket.id].name = joined.playerName;
+            const player = players[socket.id];
+            player.color = rooms[roomIndex].freeColors.shift();
+            player.name = joined.playerName;
             rooms[roomIndex].playerIDs.forEach(id => {  // Send all the existing players to the new player
-                socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name}); 
+                socket.emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name, 'levels': players[id].levels}); 
             })
 
-            socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': players[socket.id].color, 'name': players[socket.id].name});  // send the new player to all other clients
+            socket.to(currentRoom).emit("newPlayer", {'id': socket.id, 'color': player.color, 'name': player.name, 'levels': players[socket.id].levels});  // send the new player to all other clients
         } else {
-            socket.emit('error', 'Game already started or does not exist');
+            socket.emit('error', 'Error: Room is full or already started');
         }
     })
 
-    socket.on("addAI", () => {
+    socket.on("addAI", (difficulty) => {
         if (currentRoom != null) {
             const id = (Math.random() + 1).toString(36).substring(6) // Generate a random id for the AI
             let roomIndex = findRoomIndex(rooms, currentRoom); // Find the room of the player
             rooms[roomIndex].playerIDs.push(id);
             console.log(currentRoom)
-            players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'AI', id, 1, currentRoom);
+            if (difficulty == 0) { // add normal AI
+                players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'AI', id, 0, currentRoom);
+            } else { // add unfair AI
+                players[id] = new AI(rooms[roomIndex].freeColors.shift(), 'Dawg', id, 1, currentRoom);
+            }
             io.to(currentRoom).emit("newPlayer", {'id': id, 'color': players[id].color, 'name': players[id].name});  // send the new player to all other clients
             io.to(currentRoom).emit("ready", id);
             players[id].makePurchases(io, players, id, rooms[roomIndex].playerIDs);
@@ -131,7 +136,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on("leaveLobby", () => {
-        if (currentRoom != null) {
+        if (currentRoom != null && rooms[findRoomIndex(rooms, currentRoom)]) {
             let roomIndex = findRoomIndex(rooms, currentRoom);
             rooms[roomIndex].freeColors.push(players[socket.id].color);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
@@ -183,7 +188,7 @@ io.on('connection', (socket) => {
         socket.to(currentRoom).emit("playerDisconnect", socket.id)
         if (currentRoom != null){
             let roomIndex = findRoomIndex(rooms, currentRoom);
-            rooms[roomIndex].freeColors.push(players[socket.id].color);
+            rooms[roomIndex]?.freeColors.push(players[socket.id].color);
             roomFunctions.playerLeaveLobby(io, rooms, currentRoom, roomIndex, players, socket.id, fireballs);
         }
         delete players[socket.id];
@@ -213,6 +218,7 @@ let updateInterval = setInterval(() => {
                 players[winner].wins++;
                 if (players[winner].wins >= 5) {
                     io.in(room.name).emit("gameOver", (players[winner].name));
+                    rooms.splice(findRoomIndex(rooms, room.name), 1);
                 } else {
                     roomFunctions.endRound(io, players, winner, room)
                 }
