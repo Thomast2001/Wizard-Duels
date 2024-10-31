@@ -218,7 +218,15 @@ let updateInterval = setInterval(() => {
                 players[winner].wins++;
                 if (players[winner].wins >= 5) {
                     io.in(room?.name).emit("gameOver", (players[winner].name));
+                    room = rooms[findRoomIndex(rooms, room?.name)];
+                    room.playerIDs.forEach(id => {
+                        players[id].gold = 250;
+                        players[id].levels = {Fireball: 1, Airwave: 0, Teleport: 0, Lightning: 0, Health: 0, Boots: 0};
+                        players[id].speedTotal = 2
+                        players[id].maxHealth = 100
+                    });
                     rooms.splice(findRoomIndex(rooms, room?.name), 1);
+                    // reset the player                    
                 } else {
                     roomFunctions.endRound(io, players, winner, room)
                 }
