@@ -1,9 +1,10 @@
 class Fireball{
-    constructor(posX, posY, mouseX, mouseY, playerID, level){
+    constructor(posX, posY, mouseX, mouseY, playerID, level, id){
         this.x = posX;
         this.y = posY;
         this.speed = calcSpeed(posX, posY, mouseX, mouseY, upgrades.Fireball.speed[level]);
         this.playerID = playerID;
+        this.id = id;
     }
 
     move() {
@@ -18,23 +19,12 @@ class Fireball{
         ctx.fill();
     }
     
-    collisionCheck(index, fireballs, players) {
-        for (let id in players) {
-            if (this.playerID != id && players[id].health > 0 &&
-                this.x > players[id].x - 20 && this.x < players[id].x + 20 &&
-                this.y > players[id].y - 20 && this.y < players[id].y + 20) {
-                    playSound(explosionSounds);
-                    this.explode(); 
-                    fireballs.splice(index,1);
-            }
-        }
-    }
-
     explode() {
         for (let i = 0; i < 50; i++) {
             particles.push(new Particle(this.x, this.y, 10, 3,
                 `hsla(${Math.floor(Math.random()*30)}, ${Math.floor(Math.random()*100)}%, 50%, 100%)`));
         }
+        playSound(explosionSounds);
         explosionsWaves.push(new ExplosionWave(this.x, this.y, 8, '255, 255, 255'));
     }
 }
@@ -94,8 +84,8 @@ class Lightning {
     collisionCheck(players) {
         for (let id in players) {
             if (socket.id != id &&
-                this.xHit > players[id].x - 20 && this.xHit < players[id].x + 20 &&
-                this.yHit > players[id].y - 20 && this.yHit < players[id].y + 20) {
+                this.xHit > players[id].x - 22 && this.xHit < players[id].x + 22 &&
+                this.yHit > players[id].y - 25 && this.yHit < players[id].y + 25) {
                     return id;
             }
         }

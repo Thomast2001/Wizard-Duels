@@ -33,10 +33,11 @@ canvas.addEventListener("keydown", (event) => {
         switch (event.code) {
             case "KeyQ":
                 if (!cooldownSeconds.Fireball && players[socket.id].levels.Fireball > 0) {
-                    socket.emit('fireball', mouse);
+                    id = Math.random();
+                    socket.emit('fireball', mouse, id);
                     playSound(attackSounds);
                     const fireball = new Fireball(players[socket.id].x, players[socket.id].y, 
-                                mouse.x, mouse.y, socket.id, players[socket.id].levels.Fireball)
+                                mouse.x, mouse.y, socket.id, players[socket.id].levels.Fireball, id);
                     fireballs.push(fireball);
                     players[socket.id].changeOrientation(mouse.x - players[socket.id].x);
                     players[socket.id].changeAnimationState("attack");
@@ -202,7 +203,7 @@ socket.on("move", (playerMove) => {
 
 socket.on("fireball", (fb) => {
     playSound(attackSounds);
-    const fireball = new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID, players[fb.playerID].levels.Fireball)
+    const fireball = new Fireball(fb.x, fb.y, fb.targetPosX, fb.targetPosY, fb.playerID, players[fb.playerID].levels.Fireball, fb.fireballID);
     fireballs.push(fireball);
     players[fb.playerID].changeOrientation(fb.targetPosX - players[fb.playerID].x);
     players[fb.playerID].changeAnimationState("attack");
@@ -226,6 +227,15 @@ socket.on('lightning', (lightning) => {
         createLightning(lightnings, lightning.x, lightning.y);
     }
 });
+
+socket.on("fireballExplode", (id) => {
+    fireballs.forEach((fireball, index) => {
+        if (fireball.id == id) {
+            fireball.explode();
+            fireballs.splice(index, 1);
+        }
+    });
+})
 
 setInterval(() => {
     for (let id in players) {

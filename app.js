@@ -166,8 +166,8 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('fireball', targetPos => {
-        gameFunctions.fireball(players[socket.id], socket.id, socket, currentRoom, targetPos, fireballs, upgrades);
+    socket.on('fireball', (targetPos, fireballID) => {
+        gameFunctions.fireball(players[socket.id], socket.id, socket, currentRoom, targetPos, fireballs, upgrades, fireballID);
     })
     
     socket.on('airwave', () => {
@@ -240,7 +240,7 @@ let updateInterval = setInterval(() => {
             
             fireballs[room?.name].forEach((fireball, index) => {
                 fireball.move();
-                fireball.collisionCheck(index, fireballs, players, room)
+                fireball.collisionCheck(io, index, fireballs, players, room);
             })
         }
     });

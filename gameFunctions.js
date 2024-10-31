@@ -33,15 +33,19 @@ function resetPlayers(io, room, players, playerIDs) {
         // Abilites //
         //////////////
 
-function fireball(player, id, socket, currentRoom, targetPos, fireballs, upgrades) {
+function fireball(player, id, socket, currentRoom, targetPos, fireballs, upgrades, fireballID) {
+    fireballs[currentRoom].forEach(fireball => { // Check if the fireball ID already exists
+        if (fireball.id == fireballID) {
+            return;
+        }
+    });
     if (player.health > 0 && !player.stunned 
-                    && !player.onCooldown['fireball'] && player.levels.Fireball > 0) {
+                    && !player.onCooldown['fireball'] && player.levels.Fireball > 0 && fireballID != null) {
         const fireballLevel = player.levels.Fireball;
         fireballs[currentRoom]?.push(new A.Fireball(player.x, player.y, 
-                    targetPos.x, targetPos.y, id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
-
+                    targetPos.x, targetPos.y, id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel], fireballID));
         socket.to(currentRoom).emit('fireball', {'x': player.x, 'y': player.y,
-                        'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': id})
+                        'targetPosX': targetPos.x, 'targetPosY': targetPos.y, 'playerID': id, 'fireballID': fireballID})
         player.cooldown('fireball', 950);
     }
 }

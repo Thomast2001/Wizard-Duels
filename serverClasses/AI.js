@@ -65,7 +65,8 @@ class AI extends Player {
                 targetCords.x += target.speedX * 50;
                 targetCords.y += target.speedY * 50;
             }
-            gameFunctions.fireball(this, this.id, io, this.room, targetCords, fireballs, upgrades);
+            const fireballID = Math.random();
+            gameFunctions.fireball(this, this.id, io, this.room, targetCords, fireballs, upgrades, fireballID);
         }
     }
 
@@ -81,11 +82,12 @@ class AI extends Player {
                     targetCords.x += target.speedX * 50;
                     targetCords.y += target.speedY * 50;
                 }
+                const fireballID = Math.random();
                 const fireballLevel = this.levels.Fireball;
                 fireballs[this.room].push(new A.Fireball(this.x, this.y, 
-                            targetCords.x, targetCords.y, this.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel]));
+                            targetCords.x, targetCords.y, this.id, upgrades.Fireball.speed[fireballLevel], upgrades.Fireball.damage[fireballLevel], fireballID));
                 io.to(this.room).emit('fireball', {'x': this.x, 'y': this.y,
-                                'targetPosX': targetCords.x, 'targetPosY':targetCords.y, 'playerID': this.id})
+                                'targetPosX': targetCords.x, 'targetPosY':targetCords.y, 'playerID': this.id, 'fireballID': fireballID})
             }
         }
         this.cooldown('fireball', 1200);
